@@ -17,6 +17,9 @@ npm-debug.log
 yarn-error.log
 /auth.json
 php-local.ini
+/database/*.sqlite
+/database/*.sqlite-journal
+/storage/logs/*.log
 /.fleet
 /.idea
 /.nova
