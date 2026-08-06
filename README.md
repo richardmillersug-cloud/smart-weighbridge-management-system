@@ -21,7 +21,7 @@ Laravel 12 + Livewire 3 weighbridge app for truck weighing, tickets, billing, pa
 ### 1. Get the code
 
 ```bash
-git clone <YOUR_REPO_URL> "Smart weighbridge management system"
+git clone https://github.com/richardmillersug-cloud/smart-weighbridge-management-system.git "Smart weighbridge management system"
 cd "Smart weighbridge management system"
 ```
 
