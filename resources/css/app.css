@@ -1,0 +1,629 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../js';
+@source '../../app/Livewire';
+@source '../../app/Enums';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Oswald', 'Inter', ui-sans-serif, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+    /* Deep charcoal backgrounds */
+    --color-carbon-950: #07090c;
+    --color-carbon-900: #0c1016;
+    --color-carbon-800: #12171f;
+
+    /* Steel grey surfaces */
+    --color-steel-900: #161e28;
+    --color-steel-800: #1b2531;
+    --color-steel-700: #24303f;
+    --color-steel-600: #2f3f52;
+    --color-steel-500: #41556c;
+    --color-steel-400: #5f7590;
+    --color-steel-300: #8599af;
+    --color-steel-200: #b3c1d1;
+
+    /* Gold / orange industrial accent */
+    --color-brand-300: #ffd47e;
+    --color-brand-400: #f8ba3c;
+    --color-brand-500: #eb9f14;
+    --color-brand-600: #cf7d06;
+    --color-brand-700: #a35e08;
+}
+
+@layer base {
+    html.light {
+        color-scheme: light;
+
+        --color-carbon-950: #f3faf9;
+        --color-carbon-900: #ffffff;
+        --color-carbon-800: #f7fbfa;
+
+        --color-steel-900: #ffffff;
+        --color-steel-800: #f4f9f8;
+        --color-steel-700: #d9e9e6;
+        --color-steel-600: #c4d8d4;
+        --color-steel-500: #91aaa6;
+        --color-steel-400: #69827f;
+        --color-steel-300: #48635f;
+        --color-steel-200: #284642;
+
+        --color-slate-100: #0f172a;
+        --color-slate-200: #1e293b;
+        --color-slate-300: #334155;
+        --color-slate-400: #64748b;
+
+        --color-brand-300: #5eead4;
+        --color-brand-400: #14b8a6;
+        --color-brand-500: #0f8f83;
+        --color-brand-600: #0f766e;
+        --color-brand-700: #115e59;
+    }
+
+    body {
+        @apply bg-carbon-950 text-slate-200 antialiased;
+        background-image:
+            radial-gradient(ellipse 80% 50% at 50% -10%, rgb(235 159 20 / 0.06), transparent),
+            linear-gradient(to bottom, rgb(12 16 22), rgb(7 9 12));
+        background-attachment: fixed;
+    }
+
+    html.light body {
+        background-color: #f3faf9;
+        background-image:
+            radial-gradient(ellipse 80% 50% at 50% -10%, rgb(20 184 166 / 0.08), transparent),
+            linear-gradient(to bottom, #fbfefd, #f3faf9);
+    }
+
+    html.light .text-white {
+        color: #0f172a;
+    }
+
+    html.light .card {
+        border-color: #b6d4ce;
+        box-shadow:
+            0 1px 0 rgb(255 255 255 / 0.9) inset,
+            0 8px 24px rgb(15 118 110 / 0.08),
+            0 0 0 1px rgb(15 118 110 / 0.06);
+        outline: 1px solid rgb(15 118 110 / 0.12);
+        outline-offset: 0;
+    }
+
+    html.light .card-header {
+        border-color: #b6d4ce;
+        background: linear-gradient(90deg, rgb(240 253 250 / 0.75), rgb(255 255 255 / 0));
+    }
+
+    html.light .stat-card {
+        position: relative;
+        overflow: hidden;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    html.light .stat-card::before {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3px;
+        content: '';
+    }
+
+    html.light .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgb(15 118 110 / 0.11);
+    }
+
+    html.light .stat-card-sky {
+        border-color: #cbd5ff;
+        background: linear-gradient(135deg, #f5f7ff, #fff);
+    }
+
+    html.light .stat-card-sky::before {
+        background: #6366f1;
+    }
+
+    html.light .stat-card-sky .stat-value {
+        color: #4f46e5;
+    }
+
+    html.light .stat-card-emerald {
+        border-color: #a7efd0;
+        background: linear-gradient(135deg, #effcf5, #fff);
+    }
+
+    html.light .stat-card-emerald::before {
+        background: #10b981;
+    }
+
+    html.light .stat-card-emerald .stat-value {
+        color: #059669;
+    }
+
+    html.light .stat-card-brand {
+        border-color: #99e5da;
+        background: linear-gradient(135deg, #effcf9, #fff);
+    }
+
+    html.light .stat-card-brand::before {
+        background: #14b8a6;
+    }
+
+    html.light .stat-card-brand .stat-value {
+        color: #0f766e;
+    }
+
+    html.light .stat-card-red {
+        border-color: #f5d79a;
+        background: linear-gradient(135deg, #fffbeb, #fff);
+    }
+
+    html.light .stat-card-red::before {
+        background: #d97706;
+    }
+
+    html.light .stat-card-red .stat-value {
+        color: #c96b08;
+    }
+
+    html.light .action-btn-primary,
+    html.light .action-btn-success {
+        color: #fff;
+    }
+
+    /* Reference-inspired light workspace: dark navy navigation + teal content. */
+    html.light aside {
+        border-color: #263753 !important;
+        background: #101b32 !important;
+        box-shadow: 6px 0 20px rgb(15 23 42 / 0.12);
+    }
+
+    html.light aside .text-white {
+        color: #fff;
+    }
+
+    html.light aside .sidebar-link {
+        color: #98a9bf;
+    }
+
+    html.light aside .sidebar-link:hover {
+        background: #172a46;
+        color: #eaf2f8;
+    }
+
+    html.light aside .sidebar-link-active {
+        background: #12394a;
+        color: #5eead4;
+        box-shadow: inset 3px 0 #2dd4bf;
+    }
+
+    html.light aside .sidebar-heading {
+        color: #2dd4bf;
+    }
+
+    html.light aside .border-steel-700\/60,
+    html.light aside .border-steel-800 {
+        border-color: #263753;
+    }
+
+    html.light header {
+        box-shadow: 0 1px 0 rgb(20 184 166 / 0.16);
+    }
+
+    html.light .summary-row {
+        background: #effaf6;
+    }
+
+    html.light .mode-radio-active {
+        border-color: rgb(20 184 166 / 0.55);
+        background: rgb(20 184 166 / 0.10);
+        color: #0f766e;
+        --tw-ring-color: rgb(20 184 166 / 0.35);
+    }
+
+    html.light .erp-table thead th {
+        background: #edf8f5;
+        color: #48635f;
+    }
+
+    html.light .erp-table tbody tr:hover {
+        background: #f0faf7;
+    }
+
+    html.light .status-bar {
+        border-color: #d8ebe7;
+        background: #fff;
+    }
+
+    html.light .input {
+        background: #fff;
+        box-shadow: inset 0 1px 2px rgb(15 23 42 / 0.03);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    .card {
+        @apply rounded-xl border border-steel-500/70 bg-steel-900/80 backdrop-blur-sm;
+        box-shadow:
+            0 1px 0 rgb(255 255 255 / 0.04) inset,
+            0 10px 28px rgb(0 0 0 / 0.35),
+            0 0 0 1px rgb(255 255 255 / 0.04);
+        outline: 1px solid rgb(95 117 144 / 0.35);
+        outline-offset: 0;
+    }
+
+    .card-header {
+        @apply flex items-center justify-between gap-3 border-b border-steel-500/60 px-5 py-4;
+    }
+
+    .card-title {
+        @apply font-display text-sm font-semibold tracking-widest text-steel-200 uppercase;
+    }
+
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-ghost {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 disabled:cursor-not-allowed disabled:opacity-40;
+    }
+
+    .btn-primary {
+        @apply bg-brand-500 text-carbon-950 hover:bg-brand-400;
+    }
+
+    .btn-secondary {
+        @apply border border-steel-600 bg-steel-800 text-slate-200 hover:border-steel-500 hover:bg-steel-700;
+    }
+
+    .btn-danger {
+        @apply border border-red-900/60 bg-red-950/60 text-red-300 hover:bg-red-900/60;
+    }
+
+    .btn-ghost {
+        @apply text-steel-300 hover:bg-steel-800 hover:text-slate-100;
+    }
+
+    .theme-toggle {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-steel-700 bg-steel-800/70 px-3 py-2 text-xs font-semibold text-steel-300 transition hover:border-steel-500 hover:text-slate-100;
+    }
+
+    .label {
+        @apply mb-1.5 block text-xs font-semibold tracking-wider text-steel-300 uppercase;
+    }
+
+    .input {
+        @apply block w-full rounded-lg border border-steel-600 bg-carbon-900 px-3 py-2 text-sm text-slate-100 placeholder-steel-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none;
+    }
+
+    .input-error {
+        @apply mt-1.5 text-xs text-red-400;
+    }
+
+    .badge {
+        @apply inline-flex items-center rounded-md px-2 py-1 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase ring-1;
+    }
+
+    .table-industrial {
+        @apply min-w-full divide-y divide-steel-700/60 text-sm;
+    }
+
+    .table-industrial thead th {
+        @apply px-4 py-3 text-left font-display text-[11px] font-semibold tracking-widest text-steel-300 uppercase;
+    }
+
+    .table-industrial tbody tr {
+        @apply border-b border-steel-800/80 transition-colors hover:bg-steel-800/40;
+    }
+
+    .table-industrial tbody td {
+        @apply px-4 py-3 whitespace-nowrap text-slate-300;
+    }
+
+    .sidebar-link {
+        @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-steel-300 transition-colors hover:bg-steel-800 hover:text-slate-100;
+    }
+
+    .sidebar-link-active {
+        @apply bg-brand-500/10 text-brand-400 ring-1 ring-brand-500/30;
+    }
+
+    .sidebar-heading {
+        @apply px-3 pt-6 pb-2 font-display text-[10px] font-semibold tracking-[0.2em] text-steel-400 uppercase;
+    }
+
+    .stat-value {
+        @apply font-display text-3xl font-semibold text-white;
+        font-size: clamp(1.2rem, 1.8vw, 1.875rem);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    /* WOMS weighing console */
+    .led-panel {
+        @apply bg-black px-5 py-6;
+        background-image: radial-gradient(ellipse at center, #0a1a0a 0%, #000 70%);
+    }
+
+    .led-digits {
+        @apply font-mono text-5xl font-bold tracking-wider text-emerald-400 sm:text-6xl;
+        text-shadow: 0 0 12px rgb(52 211 153 / 0.45);
+    }
+
+    .mode-radio {
+        @apply cursor-pointer rounded-lg border border-steel-600 bg-steel-800/60 px-4 py-2 text-sm font-semibold text-steel-300 transition;
+    }
+
+    .mode-radio-active {
+        @apply border-blue-500/60 bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/40;
+    }
+
+    .summary-row {
+        @apply flex items-center justify-between gap-3 rounded-md bg-carbon-900/50 px-3 py-2;
+    }
+
+    .action-btn {
+        @apply inline-flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-bold tracking-wide shadow-md transition disabled:cursor-not-allowed disabled:opacity-40;
+    }
+
+    .action-btn-primary {
+        @apply bg-blue-600 text-white hover:bg-blue-500;
+    }
+
+    .action-btn-success {
+        @apply bg-emerald-600 text-white hover:bg-emerald-500;
+    }
+
+    .action-btn-secondary {
+        @apply border border-steel-600 bg-steel-800 text-slate-200 hover:bg-steel-700;
+    }
+
+    .action-btn-danger {
+        @apply border border-red-800/60 bg-red-950/50 text-red-300 hover:bg-red-900/50;
+    }
+
+    .fkey {
+        @apply rounded bg-black/25 px-1.5 py-0.5 font-mono text-[10px] opacity-80;
+    }
+
+    .erp-table-wrap {
+        @apply rounded-lg border border-steel-700/50;
+    }
+
+    .erp-table {
+        @apply min-w-full divide-y divide-steel-700/50 text-xs;
+    }
+
+    .erp-table thead th {
+        @apply sticky top-0 bg-steel-800 px-2 py-2 text-left font-display text-[10px] tracking-wider text-steel-300 uppercase;
+    }
+
+    .erp-table tbody td {
+        @apply border-b border-steel-800/80 px-2 py-2 text-slate-300;
+    }
+
+    .erp-table tbody tr:hover {
+        @apply bg-steel-800/50;
+    }
+
+    .status-bar {
+        @apply flex flex-wrap items-center gap-2 border-t border-steel-700/60 bg-carbon-900 px-4 py-2 font-mono text-[11px] text-steel-300;
+    }
+
+    .status-bar .sep {
+        @apply text-steel-600;
+    }
+
+    .status-bar strong {
+        @apply text-slate-100;
+    }
+}
+
+/* Guarantee neutral dark-mode text becomes dark on light surfaces. */
+html.light body {
+    color: #1e293b;
+}
+
+html.light .text-white,
+html.light .text-slate-100 {
+    color: #0f172a !important;
+}
+
+html.light .text-slate-200,
+html.light .text-slate-300,
+html.light .text-steel-200 {
+    color: #1e293b !important;
+}
+
+html.light .text-slate-400,
+html.light .text-steel-300 {
+    color: #334155 !important;
+}
+
+html.light .text-steel-400 {
+    color: #52657a !important;
+}
+
+html.light .input,
+html.light .table-industrial tbody td,
+html.light .erp-table tbody td,
+html.light .card-title,
+html.light .label,
+html.light .summary-row,
+html.light .status-bar {
+    color: #1e293b;
+}
+
+html.light .card {
+    background-color: #fff;
+    color: #1e293b;
+    border-color: #b6d4ce;
+}
+
+html.light .card .text-brand-400,
+html.light .card .text-brand-300 {
+    color: #0f766e !important;
+}
+
+html.light .card .text-emerald-400,
+html.light .card .text-emerald-300 {
+    color: #047857 !important;
+}
+
+html.light .card .text-amber-400,
+html.light .card .text-amber-300 {
+    color: #a16207 !important;
+}
+
+html.light .card .text-red-400,
+html.light .card .text-red-300 {
+    color: #b91c1c !important;
+}
+
+html.light .card .text-blue-400,
+html.light .card .text-blue-300 {
+    color: #1d4ed8 !important;
+}
+
+html.light .card .text-indigo-400,
+html.light .card .text-indigo-300 {
+    color: #4338ca !important;
+}
+
+html.light .card .text-sky-400,
+html.light .card .text-sky-300 {
+    color: #0369a1 !important;
+}
+
+/* Apply accessible semantic colors throughout every light-mode page. */
+html.light main .text-brand-300,
+html.light main .text-brand-400,
+html.light main .text-brand-500 {
+    color: #0f766e !important;
+}
+
+html.light main .text-emerald-200,
+html.light main .text-emerald-300,
+html.light main .text-emerald-400,
+html.light main .text-emerald-500 {
+    color: #047857 !important;
+}
+
+html.light main .text-amber-200,
+html.light main .text-amber-300,
+html.light main .text-amber-400,
+html.light main .text-amber-500 {
+    color: #92400e !important;
+}
+
+html.light main .text-red-200,
+html.light main .text-red-300,
+html.light main .text-red-400,
+html.light main .text-red-500 {
+    color: #b91c1c !important;
+}
+
+html.light main .text-blue-200,
+html.light main .text-blue-300,
+html.light main .text-blue-400,
+html.light main .text-blue-500 {
+    color: #1d4ed8 !important;
+}
+
+html.light main .text-indigo-200,
+html.light main .text-indigo-300,
+html.light main .text-indigo-400,
+html.light main .text-indigo-500 {
+    color: #4338ca !important;
+}
+
+html.light main .text-sky-200,
+html.light main .text-sky-300,
+html.light main .text-sky-400,
+html.light main .text-sky-500 {
+    color: #0369a1 !important;
+}
+
+html.light main .text-orange-200,
+html.light main .text-orange-300,
+html.light main .text-orange-400,
+html.light main .text-orange-500 {
+    color: #9a3412 !important;
+}
+
+html.light .stat-card > div > div > p:first-child {
+    color: #475569 !important;
+}
+
+html.light .stat-card > div > div > p:last-child:not(.stat-value) {
+    color: #475569 !important;
+}
+
+html.light .stat-card-sky .stat-value {
+    color: #4338ca !important;
+}
+
+html.light .stat-card-emerald .stat-value {
+    color: #047857 !important;
+}
+
+html.light .stat-card-brand .stat-value {
+    color: #0f766e !important;
+}
+
+html.light .stat-card-red .stat-value {
+    color: #b91c1c !important;
+}
+
+html.light .card .btn-danger,
+html.light .card .action-btn-danger,
+html.light main .btn-danger,
+html.light main .action-btn-danger {
+    color: #fecaca !important;
+}
+
+/* Preserve bright indicator text on the always-dark scale display. */
+html.light .led-panel .text-emerald-200,
+html.light .led-panel .text-emerald-300,
+html.light .led-panel .text-emerald-400,
+html.light .led-panel .text-emerald-500,
+html.light .led-panel .led-digits {
+    color: #34d399 !important;
+}
+
+/* The light theme intentionally retains a dark navy sidebar. */
+html.light aside,
+html.light aside .text-slate-100,
+html.light aside .text-slate-200,
+html.light aside .text-slate-300,
+html.light aside .text-slate-400,
+html.light aside .text-steel-200,
+html.light aside .text-steel-300,
+html.light aside .text-steel-400 {
+    color: #dbe7f3 !important;
+}
+
+html.light aside .text-white {
+    color: #fff !important;
+}
+
+/* Text on strong colored buttons must remain light. */
+html.light .action-btn-primary,
+html.light .action-btn-success {
+    color: #fff !important;
+}
+
+@media print {
+    body {
+        background: #fff !important;
+        color: #111 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
