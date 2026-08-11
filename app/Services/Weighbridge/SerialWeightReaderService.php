@@ -9,7 +9,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Reads live weight from a local RS232/USB serial indicator (XK3190-A12 and compatible).
+ * Reads live weight from a local RS232/USB serial indicator (XK3190-DS17, XK3190-A12 and compatible).
  *
  * Requirements:
  *  - Laravel/PHP must run on the same Windows PC that has the COM port
@@ -133,10 +133,19 @@ class SerialWeightReaderService implements WeightReaderInterface
             ];
         }
 
+        if ($raw === '') {
+            return [
+                'weight' => (float) ($cached['weight'] ?? 0),
+                'stable' => (bool) ($cached['stable'] ?? false),
+                'connected' => (bool) ($cached['connected'] ?? true),
+                'raw' => $cached['raw'] ?? null,
+            ];
+        }
+
         $weight = $this->parseWeight($raw);
         if ($weight === null) {
             return [
-                'weight' => (float) ($cached['weight'] ?? 0),
+                'weight' => 0.0,
                 'stable' => false,
                 'connected' => true,
                 'raw' => $raw,
@@ -243,37 +252,59 @@ class SerialWeightReaderService implements WeightReaderInterface
 
     private function parseWeight(string $raw): ?float
     {
-        $min = (float) config('weighbridge.min_weight', 0);
         $max = (float) config('weighbridge.max_weight', 100000);
 
-        // XK3190 continuous: "=XXXXXX.X" with reversed digits.
-        if (preg_match_all('/=([0-9.]+)/', $raw, $matches) && ! empty($matches[1])) {
-            $token = end($matches[1]);
-            $candidates = [
-                (float) strrev($token),
-                (float) $token,
-            ];
+        if (preg_match('/=([0-9.]+)/', $raw, $leadingMatch)) {
+            $weight = $this->decodeWeightToken($leadingMatch[1], $max, preferDirect: true);
+            if ($weight !== null) {
+                return $weight;
+            }
+        }
 
-            foreach ($candidates as $candidate) {
-                $candidate = abs($candidate);
-                if ($candidate >= $min && $candidate <= $max) {
-                    return round($candidate, 2);
-                }
+        if (preg_match('/([0-9.]+)=/', $raw, $trailingMatch)) {
+            $weight = $this->decodeWeightToken($trailingMatch[1], $max, preferDirect: false);
+            if ($weight !== null) {
+                return $weight;
             }
         }
 
         // Common printable frames: "ST,GS,+0016691kg" / "US,NT,  16691 kg"
         if (preg_match('/([+-]?\d+(?:\.\d+)?)\s*kg/i', $raw, $match)) {
             $weight = abs((float) $match[1]);
-            if ($weight >= $min && $weight <= $max) {
+            if ($weight <= $max) {
                 return round($weight, 2);
             }
         }
 
         if (preg_match('/[,\s]([+-]?\d{4,7})(?:\.(\d+))?(?![0-9])/', $raw, $match)) {
             $weight = abs((float) ($match[1].(isset($match[2]) ? '.'.$match[2] : '')));
-            if ($weight >= $min && $weight <= $max) {
+            if ($weight <= $max) {
                 return round($weight, 2);
+            }
+        }
+
+        return null;
+    }
+
+    private function decodeWeightToken(string $token, float $max, ?bool $preferDirect = null): ?float
+    {
+        $token = trim($token);
+        if ($token === '') {
+            return null;
+        }
+
+        $direct = abs((float) $token);
+        $reversed = abs((float) strrev($token));
+
+        $candidates = match ($preferDirect) {
+            true => [$direct, $reversed],
+            false => [$reversed, $direct],
+            default => str_contains($token, '.') ? [$reversed, $direct] : [$direct, $reversed],
+        };
+
+        foreach ($candidates as $candidate) {
+            if ($candidate >= 0 && $candidate <= $max) {
+                return round($candidate, 2);
             }
         }
 

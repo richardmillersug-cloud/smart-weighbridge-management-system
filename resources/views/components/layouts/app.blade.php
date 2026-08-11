@@ -155,7 +155,7 @@
             <p class="text-[10px] tracking-[0.2em] text-steel-400 uppercase">Indicator</p>
             <p class="mt-0.5 flex items-center gap-2 text-xs text-steel-300">
                 <span class="size-1.5 rounded-full {{ config('weighbridge.driver') === 'dummy' ? 'bg-amber-400' : 'bg-emerald-400' }}"></span>
-                {{ config('weighbridge.driver') === 'dummy' ? 'Simulation mode' : 'XK3190-A12 / RS232' }}
+                {{ config('weighbridge.driver') === 'dummy' ? 'Simulation mode' : (\App\Models\WeighbridgeStation::defaultStation()?->indicator_model ?? 'XK3190') . ' / RS232' }}
             </p>
         </div>
     </aside>

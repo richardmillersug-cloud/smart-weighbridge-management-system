@@ -7,7 +7,7 @@
     </div>
     <div>
         <label class="label" for="indicator_model">Indicator model</label>
-        <input id="indicator_model" name="indicator_model" class="input" value="{{ old('indicator_model', $station?->indicator_model ?? 'XK3190-A12') }}">
+        <input id="indicator_model" name="indicator_model" class="input" value="{{ old('indicator_model', $station?->indicator_model ?? 'XK3190-DS17') }}">
     </div>
     <div>
         <label class="label" for="communication_type">Communication</label>

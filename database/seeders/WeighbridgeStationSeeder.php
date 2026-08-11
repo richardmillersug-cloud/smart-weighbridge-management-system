@@ -12,7 +12,7 @@ class WeighbridgeStationSeeder extends Seeder
         WeighbridgeStation::query()->updateOrCreate(
             ['station_name' => 'Main Weighbridge'],
             [
-                'indicator_model' => 'XK3190-A12',
+                'indicator_model' => 'XK3190-DS17',
                 'communication_type' => 'RS232',
                 'com_port' => 'COM1',
                 'baud_rate' => 9600,

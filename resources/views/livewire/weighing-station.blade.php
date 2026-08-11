@@ -298,7 +298,7 @@
         <span class="sep"></span>
         <span>COM: {{ $station?->com_port ?? config('weighbridge.serial.port') }}</span>
         <span class="sep"></span>
-        <span>Driver: <strong>{{ config('weighbridge.driver') === 'dummy' ? 'Simulation' : 'XK3190-A12' }}</strong></span>
+        <span>Driver: <strong>{{ config('weighbridge.driver') === 'dummy' ? 'Simulation' : ($station?->indicator_model ?? 'XK3190') }}</strong></span>
         <span class="sep"></span>
         <span class="{{ $connected ? 'text-emerald-400' : 'text-red-400' }}">Scale: {{ $connected ? 'OK' : 'Offline' }}</span>
         <span class="sep"></span>
