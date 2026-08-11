@@ -1,6 +1,8 @@
 # Smart Weighbridge Management System
 
-Laravel 12 + Livewire 3 weighbridge app for truck weighing, tickets, billing, payments, demandings, and audit tracking. Live weight can come from an **XK3190-A12** indicator on a local Windows COM port, or from a built-in simulator for setup without hardware.
+Laravel 12 + Livewire 3 weighbridge app for truck weighing, tickets, billing, payments, demandings, and audit tracking. Live weight comes from a **Yaohua XK3190-DS17** indicator (or compatible XK3190 models) on a local Windows COM port, or from a built-in simulator for training without hardware.
+
+**Repository:** [github.com/richardmillersug-cloud/smart-weighbridge-management-system](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system)
 
 ---
 
@@ -8,21 +10,23 @@ Laravel 12 + Livewire 3 weighbridge app for truck weighing, tickets, billing, pa
 
 | Software | Version / notes |
 |----------|-----------------|
-| PHP | **8.4+** with extensions: `pdo_mysql`, `mbstring`, `openssl`, `ctype`, `fileinfo`, `tokenizer`, `xml` |
+| PHP | **8.4+** with extensions: `pdo_mysql`, `mbstring`, `openssl`, `ctype`, `fileinfo`, `tokenizer`, `xml`, `curl` |
 | Composer | 2.x |
-| MySQL | 8.x |
+| MySQL | **8.x** (production / recommended) |
 | Node.js / npm | 20+ (to build frontend assets) |
-| OS for live scale | **Windows** PC that has the USB/RS232 adapter (COM port). PHP must run on that same PC. |
+| OS for live scale | **Windows** station PC with the indicator COM port. PHP must run on that same PC. |
+
+For local development without MySQL, SQLite can be used temporarily (see [Quick local setup](#quick-local-setup-sqlite) below).
 
 ---
 
-## Setup (download → first run)
+## Setup (clone → first run)
 
 ### 1. Get the code
 
 ```bash
-git clone https://github.com/richardmillersug-cloud/smart-weighbridge-management-system.git "Smart weighbridge management system"
-cd "Smart weighbridge management system"
+git clone https://github.com/richardmillersug-cloud/smart-weighbridge-management-system.git
+cd smart-weighbridge-management-system
 ```
 
 Or download the ZIP from GitHub and extract it.
@@ -76,7 +80,7 @@ CREATE DATABASE smart_weighbridge CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_
 php artisan migrate --seed
 ```
 
-This creates tables, roles, sample users, a default station (XK3190-A12), and demo transactions.
+This creates tables, roles, sample users, a default station (**XK3190-DS17 on COM1**), and demo transactions.
 
 ### 6. Build the frontend
 
@@ -103,6 +107,66 @@ Open **http://127.0.0.1:8000** and sign in.
 
 ---
 
+## Station computer deployment (production)
+
+Use this flow on the **physical weighbridge PC** where the indicator is connected.
+
+1. Install PHP 8.4, Composer, Node.js, and MySQL on the station PC.
+2. Clone the repo and complete [Setup](#setup-clone--first-run) steps 2–7.
+3. Enable required PHP extensions in `php.ini` (especially `openssl`, `curl`, `pdo_mysql`, `mbstring`).
+4. Connect the **XK3190-DS17** to the PC via RS232 or USB‑serial and confirm the COM port in **Device Manager → Ports (COM & LPT)**.
+5. Set live indicator mode in `.env`:
+
+```env
+WEIGHBRIDGE_DRIVER=xk3190
+WEIGHBRIDGE_COM_PORT=COM1
+WEIGHBRIDGE_BAUD_RATE=9600
+WEIGHBRIDGE_DATA_BITS=8
+WEIGHBRIDGE_STOP_BITS=1
+WEIGHBRIDGE_PARITY=none
+WEIGHBRIDGE_FLOW_CONTROL=none
+```
+
+6. In the app, open **Stations** and confirm the default station matches your COM port and baud rate (station settings override `.env`).
+7. Restart the app (`php artisan serve`), then use **Stations → Test Connection**.
+8. Open **Weighing** and confirm **Online**, live weight updating, and footer showing **Driver: XK3190-DS17**.
+
+**Important:** Laravel must run on the **same Windows PC** as the COM port. A remote server cannot read the operator’s local serial port.
+
+---
+
+## Quick local setup (SQLite)
+
+For development or first-time testing when MySQL is not installed yet:
+
+1. Create an empty SQLite file:
+
+```bash
+# Windows PowerShell
+New-Item -ItemType File -Path database\database.sqlite -Force
+```
+
+2. In `.env`, switch the database driver:
+
+```env
+DB_CONNECTION=sqlite
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=smart_weighbridge
+# DB_USERNAME=root
+# DB_PASSWORD=
+```
+
+3. Run migrations and seed:
+
+```bash
+php artisan migrate --seed
+```
+
+Switch back to MySQL before production use.
+
+---
+
 ## Sample logins (after seeding)
 
 | Email | Password | Role |
@@ -115,7 +179,7 @@ Change these passwords before any real production use.
 
 ---
 
-## Scale / XK3190-A12 setup
+## Scale / XK3190-DS17 setup
 
 ### Without hardware (simulation)
 
@@ -127,24 +191,33 @@ WEIGHBRIDGE_DRIVER=dummy
 
 The weighing screen shows simulated live weight. Useful for training and development.
 
-### With XK3190-A12 on this PC
+### With XK3190-DS17 on this PC
 
-1. Connect the indicator USB/RS232 adapter and note the COM port in **Device Manager** (e.g. `COM3`).
-2. In `.env`:
+1. Connect the indicator to the station PC (RS232 to onboard COM port, or USB‑serial adapter).
+2. Open **Device Manager → Ports (COM & LPT)** and note the COM port (e.g. `COM1`).
+3. On the indicator, set serial output to **continuous transmit** at **9600‑8‑N‑1**.
+4. In `.env`, set the driver and COM port (example for onboard **COM1**):
 
 ```env
 WEIGHBRIDGE_DRIVER=xk3190
-WEIGHBRIDGE_COM_PORT=COM3
+WEIGHBRIDGE_COM_PORT=COM1
 WEIGHBRIDGE_BAUD_RATE=9600
 ```
 
-3. In the app, open **Stations** and set the same **COM port** and baud on the default station (station settings override `.env`).
-4. Restart PHP (`php artisan serve`), then use **Test Connection** on the station.
-5. On **Weighing**, confirm **Online / STABLE** and that the footer shows **Driver: XK3190-A12**.
+5. In **Stations**, set the same COM port and baud on the default station.
+6. Restart PHP (`php artisan serve`), run **Test Connection**, then open **Weighing**.
+7. Confirm **Online / STABLE**, live weight changes with the scale, and footer shows **Driver: XK3190-DS17**.
 
-**Important:** Host Laravel on the **same Windows PC** as the COM adapter. A remote server cannot open the operator’s local serial port.
+Compatible indicators using the same Yaohua continuous RS232 format (including **XK3190-A12**) also work with `WEIGHBRIDGE_DRIVER=xk3190`.
 
-Typical serial settings for XK3190-A12 continuous mode: **9600-8-N-1**.
+### Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| **Offline** | Wrong COM port, cable unplugged, or port in use | Check Device Manager; close other serial software; update **Stations** COM port |
+| **Online but weight stuck** | Parser/cache issue or indicator not in continuous mode | Confirm continuous output on DS17; restart app; run **Test Connection** |
+| **Permission denied on COM1** | Built-in port disabled or locked | Reboot; check BIOS/driver; try USB‑serial adapter and use its COM port |
+| **Weight wrong by factor of 10** | Decimal/format mismatch on indicator | Match indicator serial format to continuous mode in DS17 settings |
 
 ---
 
@@ -189,11 +262,13 @@ app/Services/Weighbridge/
 ├── WeightReaderInterface.php
 ├── WeightReading.php
 ├── DummyWeightReaderService.php   # simulation
-├── SerialWeightReaderService.php  # COM read + XK3190 parse
-└── XK3190RS232ReaderService.php   # alias for XK3190-A12
+├── SerialWeightReaderService.php  # COM read + XK3190/DS17 parse
+└── XK3190RS232ReaderService.php   # alias for live serial indicators
 ```
 
 Select driver with `WEIGHBRIDGE_DRIVER` in `.env` (`dummy` | `xk3190` | `serial`).
+
+Live weight parsing supports **XK3190-DS17 fixed-width frames** (e.g. `=0001234`) and compatible Yaohua continuous formats. Minimum **100 kg** applies when **capturing** a weight for a ticket, not for live display.
 
 ---
 
@@ -203,15 +278,28 @@ Select driver with `WEIGHBRIDGE_DRIVER` in `.env` (`dummy` | `xk3190` | `serial`
 php artisan test
 ```
 
+Serial frame parsing tests live in `tests/Unit/SerialWeightParserTest.php`.
+
+---
+
+## Git workflow
+
+| Branch | Purpose |
+|--------|---------|
+| `master` | Main release line |
+| `user/richardweighbridgeUG` | User/station deployment branch |
+
+Push to: `https://github.com/richardmillersug-cloud/smart-weighbridge-management-system.git`
+
 ---
 
 ## What not to commit
 
 - Never commit `.env` (secrets and local DB passwords).
-- `vendor/`, `node_modules/`, and local PHP ini files stay out of git (see `.gitignore`).
+- Do not commit `vendor/`, `node_modules/`, `composer.phar`, or local PHP ini files (see `.gitignore`).
 
 ---
 
 ## Tech stack
 
-Laravel 12 · PHP 8.4 · MySQL 8 · Livewire 3 · Tailwind CSS 4 · Vite · Spatie Permission · Chart.js
+Laravel 12 · PHP 8.4 · MySQL 8 · Livewire 3 · Tailwind CSS 4 · Vite · Spatie Permission · Chart.js · XK3190-DS17 RS232
