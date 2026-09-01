@@ -23,7 +23,11 @@ if (Test-Path "composer.phar") {
 }
 
 Write-Host "[2/4] Frontend build..."
-npm ci
+if (Test-Path "package-lock.json") {
+    npm ci
+} else {
+    npm install
+}
 npm run build
 
 Write-Host "[3/4] Preparing release folder..."
@@ -40,7 +44,7 @@ $excludeDirs = @(
 
 robocopy $AppRoot $ReleaseDir /MIR /XD .git node_modules dist tests .phpunit.cache `
     storage\logs storage\framework\cache storage\framework\sessions storage\framework\views `
-    /XF .env .env.backup composer.phar php-local.ini database\*.sqlite `
+    /XF .env .env.backup composer.phar php-local.ini `
     /NFL /NDL /NJH /NJS /nc /ns /np | Out-Null
 
 # Ensure writable storage dirs exist in release
