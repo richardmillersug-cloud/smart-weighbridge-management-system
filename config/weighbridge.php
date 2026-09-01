@@ -50,4 +50,18 @@ return [
     'max_weight' => 100000,     // indicator ceiling (kg)
     'stability_required' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Implied decimal places
+    |--------------------------------------------------------------------------
+    |
+    | Some indicators send an integer (20000) while the LED shows 20.000 kg.
+    | Set this to the same decimal-place count as the indicator (0-4) only when
+    | the live weight is 10/100/1000× the LED and the frame has no decimal point.
+    | Leave 0 for truck scales that already send whole kilograms.
+    |
+    */
+
+    'decimal_places' => (int) env('WEIGHBRIDGE_DECIMAL_PLACES', 0),
+
 ];

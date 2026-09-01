@@ -91,9 +91,14 @@ class StationController extends Controller
             ? sprintf(' Live weight parsed: %s kg.', number_format((float) $probe['weight'], 2))
             : ' Port opened, waiting for a readable indicator frame.';
 
+        $raw = is_string($probe['raw'] ?? null) ? $probe['raw'] : '';
+        $rawNote = $raw !== ''
+            ? ' Raw: '.mb_substr(preg_replace('/[^\x20-\x7E]/', '.', $raw) ?? '', 0, 48)
+            : '';
+
         return back()->with(
             'success',
-            sprintf('Connected to %s.%s', $probe['port'], $weightNote),
+            sprintf('Connected to %s.%s%s', $probe['port'], $weightNote, $rawNote),
         );
     }
 

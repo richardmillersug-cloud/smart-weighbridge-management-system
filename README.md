@@ -111,7 +111,7 @@ Open **http://127.0.0.1:8000** and sign in.
 
 Use this flow on the **physical weighbridge PC** where the indicator is connected.
 
-1. Install PHP 8.4, Composer, Node.js, and MySQL on the station PC.
+1. Install PHP 8.4, Composer, Node.js, and **local MySQL** on the station PC.
 2. Clone the repo and complete [Setup](#setup-clone--first-run) steps 2–7.
 3. Enable required PHP extensions in `php.ini` (especially `openssl`, `curl`, `pdo_mysql`, `mbstring`).
 4. Connect the **XK3190-DS17** to the PC via RS232 or USB‑serial and confirm the COM port in **Device Manager → Ports (COM & LPT)**.
@@ -130,6 +130,7 @@ WEIGHBRIDGE_FLOW_CONTROL=none
 6. In the app, open **Stations** and confirm the default station matches your COM port and baud rate (station settings override `.env`).
 7. Restart the app (`php artisan serve`), then use **Stations → Test Connection**.
 8. Open **Weighing** and confirm **Online**, live weight updating, and footer showing **Driver: XK3190-DS17**.
+9. Optional: enable [Local + cloud database](#local--cloud-database-real-time-sync) for DigitalOcean backup.
 
 **Important:** Laravel must run on the **same Windows PC** as the COM port. A remote server cannot read the operator’s local serial port.
 
@@ -164,6 +165,83 @@ php artisan migrate --seed
 ```
 
 Switch back to MySQL before production use.
+
+---
+
+## Local + cloud database (real-time sync)
+
+Recommended production layout for a station PC:
+
+```text
+[Station PC]
+  App + COM1 indicator
+  Local MySQL  ← primary (always)
+        |
+        | queue jobs (seconds)
+        v
+  DigitalOcean Managed MySQL  ← cloud mirror
+```
+
+### How it works
+
+1. Every ticket, invoice, payment, and master-data change saves to **local MySQL** first.
+2. A queue job immediately pushes the row to **DigitalOcean** (`mysql_cloud`).
+3. If the internet drops, weighing continues locally; failed jobs retry when back online.
+4. Local DB remains the **source of truth**.
+
+### `.env` on the station PC
+
+```env
+# Local primary database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=smart_weighbridge
+DB_USERNAME=root
+DB_PASSWORD=local_password
+
+# DigitalOcean managed MySQL
+CLOUD_SYNC_ENABLED=true
+DB_CLOUD_HOST=your-cluster.db.ondigitalocean.com
+DB_CLOUD_PORT=25060
+DB_CLOUD_DATABASE=smart_weighbridge
+DB_CLOUD_USERNAME=doadmin
+DB_CLOUD_PASSWORD=your_do_password
+DB_CLOUD_SSL_CA=C:\smart-weighbridge-management-system\storage\certs\ca-certificate.crt
+
+# Keep sessions/cache local (works better when cloud is remote)
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=database
+```
+
+### One-time cloud setup
+
+1. Create a **DigitalOcean Managed MySQL** cluster and database.
+2. Add the station PC **public IP** under **Trusted sources**.
+3. Download the CA certificate into `storage/certs/`.
+4. Run migrations on the cloud database once:
+
+```bash
+php artisan migrate --database=mysql_cloud
+php artisan cloud:sync-full
+```
+
+### Always-on queue worker (required for near real-time sync)
+
+In a second terminal (or Windows Task Scheduler at startup):
+
+```bash
+php artisan queue:work --tries=5
+```
+
+### Cloud sync commands
+
+| Command | Purpose |
+|---------|---------|
+| `php artisan cloud:sync-status` | Check connection and recent sync log |
+| `php artisan cloud:sync-full` | Push all local records to cloud |
+| `php artisan cloud:sync-retry` | Retry failed sync rows |
 
 ---
 
@@ -244,6 +322,22 @@ Compatible indicators using the same Yaohua continuous RS232 format (including *
 | Stations | `/stations` | Indicator / COM settings |
 | Reports / Audit | `/reports`, `/audit` | Oversight |
 | Users / Settings | `/users`, `/settings` | Admin |
+| Cloud Sync | `/cloud-sync` | Admin — cloud DB status and sync actions |
+
+---
+
+## Windows installer (EXE)
+
+Build a **`SmartWeighbridge-Setup.exe`** for station PCs. See **[installer/README.md](installer/README.md)** for full steps.
+
+Quick build:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File installer\scripts\build-release.ps1
+# Then compile installer\SmartWeighbridge.iss in Inno Setup 6
+```
+
+After install, operators launch the app with **`SmartWeighbridge.bat`** (starts web server, queue worker, and opens the browser).
 
 ---
 

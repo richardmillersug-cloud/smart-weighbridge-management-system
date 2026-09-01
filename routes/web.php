@@ -4,6 +4,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\CashSessionController;
+use App\Http\Controllers\CloudSyncController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemandingController;
@@ -123,4 +124,9 @@ Route::middleware('auth')->group(function (): void {
     // System settings
     Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    // Cloud database sync
+    Route::get('cloud-sync', [CloudSyncController::class, 'index'])->name('cloud-sync.index');
+    Route::post('cloud-sync/full', [CloudSyncController::class, 'syncFull'])->name('cloud-sync.full');
+    Route::post('cloud-sync/retry', [CloudSyncController::class, 'syncRetry'])->name('cloud-sync.retry');
 });

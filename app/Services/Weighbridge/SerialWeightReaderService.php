@@ -254,6 +254,11 @@ class SerialWeightReaderService implements WeightReaderInterface
     {
         $max = (float) config('weighbridge.max_weight', 100000);
 
+        $binary = $this->parseContinuousBinaryFrame($raw, $max);
+        if ($binary !== null) {
+            return $binary;
+        }
+
         if (preg_match('/=([0-9.]+)/', $raw, $leadingMatch)) {
             $weight = $this->decodeWeightToken($leadingMatch[1], $max, preferDirect: true);
             if ($weight !== null) {
@@ -286,6 +291,48 @@ class SerialWeightReaderService implements WeightReaderInterface
         return null;
     }
 
+    /**
+     * XK3190-DS17/DS3 continuous mode: STX, sign, 6 digits, decimal places (0-4), checksum, ETX.
+     * 20.000 kg arrives as digits 020000 with decimal-place byte 3 — not as 20000 kg.
+     */
+    private function parseContinuousBinaryFrame(string $raw, float $max): ?float
+    {
+        if (! preg_match_all('/\x02([+-])(\d{6})(.)/s', $raw, $matches, PREG_SET_ORDER)) {
+            return null;
+        }
+
+        $match = $matches[array_key_last($matches)];
+        $places = $this->decimalPlacesFromByte($match[3]);
+        if ($places === null) {
+            return null;
+        }
+
+        $weight = abs((float) $match[2]) / (10 ** $places);
+        if ($weight <= $max) {
+            return round($weight, 2);
+        }
+
+        return null;
+    }
+
+    private function decimalPlacesFromByte(string $byte): ?int
+    {
+        if ($byte === '') {
+            return null;
+        }
+
+        $ord = ord($byte);
+        if ($ord >= 0 && $ord <= 4) {
+            return $ord;
+        }
+
+        if ($byte >= '0' && $byte <= '4') {
+            return (int) $byte;
+        }
+
+        return null;
+    }
+
     private function decodeWeightToken(string $token, float $max, ?bool $preferDirect = null): ?float
     {
         $token = trim($token);
@@ -296,13 +343,28 @@ class SerialWeightReaderService implements WeightReaderInterface
         $direct = abs((float) $token);
         $reversed = abs((float) strrev($token));
 
+        // 6-digit LSB-first: indicator 20 kg is sent as 020000, which is 20000 if read forwards.
+        if (! str_contains($token, '.') && ctype_digit($token) && strlen($token) === 6) {
+            $directInt = (int) $token;
+            $reversedInt = (int) strrev($token);
+            if ($reversedInt > 0 && $reversedInt <= $max && $directInt === $reversedInt * 1000) {
+                return round((float) $reversedInt, 2);
+            }
+        }
+
         $candidates = match ($preferDirect) {
             true => [$direct, $reversed],
             false => [$reversed, $direct],
             default => str_contains($token, '.') ? [$reversed, $direct] : [$direct, $reversed],
         };
 
+        $places = (int) config('weighbridge.decimal_places', 0);
+
         foreach ($candidates as $candidate) {
+            if ($places > 0 && ! str_contains($token, '.')) {
+                $candidate /= (10 ** $places);
+            }
+
             if ($candidate >= 0 && $candidate <= $max) {
                 return round($candidate, 2);
             }
