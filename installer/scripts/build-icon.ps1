@@ -5,7 +5,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$AssetsDir = Join-Path $PSScriptRoot "..\assets"
+$AppRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$AssetsDir = Join-Path $AppRoot "installer\assets"
 if (-not $SourcePng) { $SourcePng = Join-Path $AssetsDir "app-icon.png" }
 if (-not $OutputIco) { $OutputIco = Join-Path $AssetsDir "app-icon.ico" }
 
@@ -62,6 +63,10 @@ try {
 
     [System.IO.File]::WriteAllBytes($OutputIco, $memoryStream.ToArray())
     Write-Host "Created: $OutputIco"
+
+    $PublicIcon = Join-Path $AppRoot "public\icon.ico"
+    Copy-Item -Path $OutputIco -Destination $PublicIcon -Force
+    Write-Host "Copied to: $PublicIcon"
 }
 finally {
     $png.Dispose()

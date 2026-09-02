@@ -9,8 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  build-windows-installer:
+  build-windows-native:
     runs-on: windows-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -20,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: curl, fileinfo, mbstring, openssl, pdo_mysql, tokenizer, xml, ctype
+          extensions: curl, fileinfo, mbstring, openssl, pdo_mysql, tokenizer, xml, ctype, zip
           tools: composer
 
       - name: Setup Node
@@ -29,52 +30,51 @@ jobs:
           node-version: '22'
           cache: npm
 
-      - name: Install Inno Setup
-        run: choco install innosetup -y --no-progress
-
       - name: Resolve version from tag
         shell: pwsh
         run: |
           $tag = "${{ github.ref_name }}"
           $version = $tag.TrimStart('v')
           "VERSION=$version" >> $env:GITHUB_ENV
+          "NATIVEPHP_APP_VERSION=$version" >> $env:GITHUB_ENV
           Set-Content -Path VERSION -Value $version -NoNewline
           Set-Content -Path installer/version.iss -Value @(
             "; Generated in CI from git tag",
             "#define AppVersion `"$version`""
           )
 
-      - name: Build app icon
-        shell: pwsh
-        run: installer/scripts/build-icon.ps1
-
       - name: Install PHP dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+        run: composer install --optimize-autoloader --no-interaction
 
-      - name: Build frontend
+      - name: Install NativePHP runtime
+        run: php artisan native:install --no-interaction
+
+      - name: Build frontend and app icon
+        shell: pwsh
         run: |
+          installer/scripts/build-icon.ps1
           npm install
           npm run build
 
-      - name: Prepare release folder
-        shell: pwsh
-        run: installer/scripts/prepare-release-folder.ps1
+      - name: Build native Windows app
+        run: php artisan native:build win --no-interaction
 
-      - name: Compile installer
+      - name: Prepare release artifact
         shell: pwsh
         run: |
-          $iscc = @(
-            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-            "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
-            "$env:ProgramFiles\Inno Setup 7\ISCC.exe"
-          ) | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $iscc) { throw "ISCC.exe not found after Inno Setup install" }
-          & $iscc installer/SmartWeighbridge.iss
+          $exe = Get-ChildItem dist -Recurse -Filter "*.exe" |
+            Where-Object { $_.Name -notmatch "elevate" } |
+            Sort-Object Length -Descending |
+            Select-Object -First 1
+          if (-not $exe) { throw "Native build produced no .exe in dist/" }
+          Copy-Item $exe.FullName "dist/SmartWeighbridge-Native.exe"
+          Write-Host "Release artifact: dist/SmartWeighbridge-Native.exe ($([math]::Round($exe.Length/1MB,2)) MB)"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/SmartWeighbridge-Setup.exe
+            dist/SmartWeighbridge-Native.exe
             CUSTOMER-SETUP.md
+            installer/NATIVE-DESKTOP.md
           generate_release_notes: true
