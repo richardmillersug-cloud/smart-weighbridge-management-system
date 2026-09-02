@@ -1,9 +1,11 @@
 ; Smart Weighbridge Management System — Windows installer
 ; Requires Inno Setup 6 or 7: https://jrsoftware.org/isinfo.php
 ; Run build-release.ps1 first, then compile this script.
+; Version: see VERSION file and installer/version.iss
+
+#include "version.iss"
 
 #define AppName "Smart Weighbridge"
-#define AppVersion "1.0.0"
 #define AppPublisher "Smart Weighbridge"
 #define AppURL "https://github.com/richardmillersug-cloud/smart-weighbridge-management-system"
 #define ReleaseDir "..\dist\SmartWeighbridgeRelease"
@@ -17,6 +19,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 DefaultDirName={autopf}\SmartWeighbridge
+UsePreviousAppDir=yes
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
 OutputDir={#OutputDir}
@@ -42,11 +45,13 @@ Source: "{#ReleaseDir}\installer\env\.env.station.example"; DestDir: "{app}"; De
 Name: "{group}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"
 Name: "{group}\Stop {#AppName}"; Filename: "{app}\Stop SmartWeighbridge.bat"; WorkingDir: "{app}"
 Name: "{group}\Customer Setup Guide"; Filename: "{app}\CUSTOMER-SETUP.md"; WorkingDir: "{app}"
+Name: "{group}\Upgrade Station"; Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\upgrade-station.ps1"""; WorkingDir: "{app}"
 Name: "{group}\Station Setup"; Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\setup-station.ps1"""; WorkingDir: "{app}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
 Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\setup-station.ps1"""; Description: "Run first-time database setup"; Flags: postinstall skipifsilent unchecked
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\upgrade-station.ps1"""; Description: "Run database migrations (after an update)"; Flags: postinstall skipifsilent unchecked
 Filename: "notepad.exe"; Parameters: "{app}\.env"; Description: "Edit .env configuration"; Flags: postinstall skipifsilent unchecked
 Filename: "{app}\SmartWeighbridge.bat"; Description: "Launch {#AppName}"; Flags: postinstall skipifsilent nowait unchecked
 

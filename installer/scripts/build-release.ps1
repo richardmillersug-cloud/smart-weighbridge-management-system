@@ -9,10 +9,14 @@ $ReleaseDir = Join-Path $AppRoot "dist\SmartWeighbridgeRelease"
 Write-Host "Building Smart Weighbridge release..." -ForegroundColor Cyan
 Set-Location $AppRoot
 
-foreach ($cmd in @("php", "composer", "npm")) {
+foreach ($cmd in @("php", "npm")) {
     if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
         throw "$cmd is not installed or not on PATH."
     }
+}
+
+if (-not (Get-Command composer -ErrorAction SilentlyContinue) -and -not (Test-Path (Join-Path $AppRoot "composer.phar"))) {
+    throw "composer is not installed and composer.phar was not found."
 }
 
 Write-Host "[1/4] Composer production install..."
@@ -31,31 +35,7 @@ if (Test-Path "package-lock.json") {
 npm run build
 
 Write-Host "[3/4] Preparing release folder..."
-if (Test-Path $ReleaseDir) {
-    Remove-Item $ReleaseDir -Recurse -Force
-}
-New-Item -ItemType Directory -Path $ReleaseDir -Force | Out-Null
-
-$excludeDirs = @(
-    ".git", "node_modules", "dist", "tests", ".phpunit.cache",
-    "storage\logs", "storage\framework\cache", "storage\framework\sessions",
-    "storage\framework\views", "database\*.sqlite"
-)
-
-robocopy $AppRoot $ReleaseDir /MIR /XD .git node_modules dist tests .phpunit.cache `
-    storage\logs storage\framework\cache storage\framework\sessions storage\framework\views `
-    /XF .env .env.backup composer.phar php-local.ini `
-    /NFL /NDL /NJH /NJS /nc /ns /np | Out-Null
-
-# Ensure writable storage dirs exist in release
-@(
-    "storage\logs", "storage\framework\cache", "storage\framework\sessions",
-    "storage\framework\views", "storage\app\public", "storage\certs",
-    "bootstrap\cache"
-) | ForEach-Object {
-    $path = Join-Path $ReleaseDir $_
-    if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null }
-}
+& (Join-Path $PSScriptRoot "prepare-release-folder.ps1") -AppRoot $AppRoot
 
 Write-Host "[4/4] Release folder ready: $ReleaseDir" -ForegroundColor Green
 Write-Host ""

@@ -330,16 +330,24 @@ Compatible indicators using the same Yaohua continuous RS232 format (including *
 
 ## Windows installer (EXE)
 
-Build a **`SmartWeighbridge-Setup.exe`** for station PCs. See **[installer/README.md](installer/README.md)** for full steps.
+Build and publish **`SmartWeighbridge-Setup.exe`** for station PCs. See **[installer/README.md](installer/README.md)** for full steps.
 
-Quick build:
+**Publish a release (customers download updates from GitHub):**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File installer\scripts\build-release.ps1
-# Then compile installer\SmartWeighbridge.iss in Inno Setup 6
+powershell -ExecutionPolicy Bypass -File installer\scripts\publish-release.ps1
 ```
 
-After install, operators launch the app with **`SmartWeighbridge.bat`** (starts web server, queue worker, and opens the browser).
+Or tag a version for automated CI build:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+**Releases:** [github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases)
+
+After install, operators launch the app with **`SmartWeighbridge.bat`** (starts web server, queue worker, and opens the browser). To update, run a new Setup.exe then **Upgrade Station** from the Start Menu.
 
 ---
 
