@@ -16,6 +16,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $permissions = [
             'users.view', 'users.create', 'users.edit', 'users.disable', 'users.assign-roles',
             'settings.manage',
+            'cloud-sync.manage',
             'customers.view', 'customers.create', 'customers.edit', 'customers.delete',
             'vehicles.view', 'vehicles.create', 'vehicles.edit', 'vehicles.delete',
             'drivers.view', 'drivers.create', 'drivers.edit', 'drivers.delete',

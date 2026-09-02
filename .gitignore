@@ -20,8 +20,12 @@ php-local.ini
 /database/*.sqlite
 /database/*.sqlite-journal
 /storage/logs/*.log
+/storage/certs/*.crt
+/storage/certs/*.pem
+!/storage/certs/.gitkeep
 /.fleet
 /.idea
 /.nova
 /.vscode
-/.zed
+/composer.phar
+/dist

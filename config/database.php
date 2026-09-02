@@ -39,6 +39,25 @@ return [
             ]) : [],
         ],
 
+        'mysql_cloud' => [
+            'driver' => 'mysql',
+            'url' => env('DB_CLOUD_URL'),
+            'host' => env('DB_CLOUD_HOST', ''),
+            'port' => env('DB_CLOUD_PORT', '25060'),
+            'database' => env('DB_CLOUD_DATABASE', 'smart_weighbridge'),
+            'username' => env('DB_CLOUD_USERNAME', ''),
+            'password' => env('DB_CLOUD_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => 'InnoDB',
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('DB_CLOUD_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+            ]) : [],
+        ],
+
     ],
 
     'migrations' => [
