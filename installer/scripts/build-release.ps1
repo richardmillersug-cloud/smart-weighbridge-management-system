@@ -9,10 +9,14 @@ $ReleaseDir = Join-Path $AppRoot "dist\SmartWeighbridgeRelease"
 Write-Host "Building Smart Weighbridge release..." -ForegroundColor Cyan
 Set-Location $AppRoot
 
-foreach ($cmd in @("php", "composer", "npm")) {
+foreach ($cmd in @("php", "npm")) {
     if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
         throw "$cmd is not installed or not on PATH."
     }
+}
+
+if (-not (Get-Command composer -ErrorAction SilentlyContinue) -and -not (Test-Path (Join-Path $AppRoot "composer.phar"))) {
+    throw "composer is not installed and composer.phar was not found."
 }
 
 Write-Host "[1/4] Composer production install..."
@@ -46,6 +50,9 @@ robocopy $AppRoot $ReleaseDir /MIR /XD .git node_modules dist tests .phpunit.cac
     storage\logs storage\framework\cache storage\framework\sessions storage\framework\views `
     /XF .env .env.backup composer.phar php-local.ini `
     /NFL /NDL /NJH /NJS /nc /ns /np | Out-Null
+if ($LASTEXITCODE -gt 7) {
+    throw "robocopy failed with exit code $LASTEXITCODE"
+}
 
 # Ensure writable storage dirs exist in release
 @(

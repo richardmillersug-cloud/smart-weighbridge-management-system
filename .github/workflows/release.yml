@@ -26,11 +26,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
 
       - name: Install Inno Setup
-        run: choco install innosetup -y
+        run: choco install innosetup -y --no-progress
 
       - name: Resolve version from tag
         shell: pwsh
@@ -44,13 +44,29 @@ jobs:
             "#define AppVersion `"$version`""
           )
 
-      - name: Build release folder
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Build frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Prepare release folder
         shell: pwsh
         run: |
-          composer install --no-dev --optimize-autoloader --no-interaction
-          npm ci
-          npm run build
-          & installer/scripts/build-release.ps1
+          $ReleaseDir = "dist/SmartWeighbridgeRelease"
+          if (Test-Path $ReleaseDir) { Remove-Item $ReleaseDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $ReleaseDir -Force | Out-Null
+          robocopy . $ReleaseDir /MIR /XD .git node_modules dist tests .phpunit.cache storage/logs storage/framework/cache storage/framework/sessions storage/framework/views /XF .env .env.backup composer.phar php-local.ini /NFL /NDL /NJH /NJS /nc /ns /np
+          if ($LASTEXITCODE -gt 7) { throw "robocopy failed with exit code $LASTEXITCODE" }
+          @(
+            "storage/logs", "storage/framework/cache", "storage/framework/sessions",
+            "storage/framework/views", "storage/app/public", "storage/certs", "bootstrap/cache"
+          ) | ForEach-Object {
+            $path = Join-Path $ReleaseDir $_
+            if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null }
+          }
 
       - name: Compile installer
         shell: pwsh
@@ -60,7 +76,7 @@ jobs:
             "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
             "$env:ProgramFiles\Inno Setup 7\ISCC.exe"
           ) | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $iscc) { throw "ISCC.exe not found" }
+          if (-not $iscc) { throw "ISCC.exe not found after Inno Setup install" }
           & $iscc installer/SmartWeighbridge.iss
 
       - name: Create GitHub Release
