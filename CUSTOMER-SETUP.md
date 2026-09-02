@@ -245,8 +245,13 @@ When your supplier sends a newer **`SmartWeighbridge-Setup.exe`**:
 
 Your **`.env`**, local database, and tickets/invoices are **kept**. You do not need to run **Station Setup** again unless your supplier says so.
 
-**Download updates (if using GitHub Releases):**  
-[https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases)
+### For customers — install or update
+
+**Download:** [GitHub Releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases) → **`SmartWeighbridge-Native.exe`** (v1.1.0+)
+
+This is a **native Windows app** — no browser, no `127.0.0.1` address bar.
+
+Legacy **`SmartWeighbridge-Setup.exe`** (Inno Setup / browser mode) may still be on older releases.
 
 ---
 

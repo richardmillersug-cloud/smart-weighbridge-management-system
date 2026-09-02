@@ -3,7 +3,12 @@
     "name": "smart/weighbridge-management-system",
     "type": "project",
     "description": "Smart Weighbridge Management System - truck weighing operations, weight tickets, invoicing, payments and audit tracking.",
-    "keywords": ["laravel", "weighbridge", "weighing", "livewire"],
+    "keywords": [
+        "laravel",
+        "weighbridge",
+        "weighing",
+        "livewire"
+    ],
     "license": "proprietary",
     "require": {
         "php": "^8.4",
@@ -11,6 +16,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6",
+        "nativephp/desktop": "^2.2",
         "spatie/laravel-permission": "^6.16"
     },
     "require-dev": {
@@ -42,7 +48,8 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan native:install --force --quiet "
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -53,6 +60,10 @@
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names=server,queue,vite"
+        ],
+        "native:dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -k -c \"#93c5fd,#c4b5fd\" \"php artisan native:run --no-interaction\" \"npm run dev\" --names=app,vite"
         ]
     },
     "extra": {

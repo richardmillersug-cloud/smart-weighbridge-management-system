@@ -2,6 +2,18 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.0] - 2026-09-02
+
+### Added
+- **Native Windows desktop app** via NativePHP — own window, no browser address bar
+- `php artisan native:run` and `SmartWeighbridge.bat` launch native mode
+- Auto-started queue worker for cloud sync in native mode
+- `installer/scripts/build-native.ps1` and `installer/NATIVE-DESKTOP.md`
+
+### Changed
+- GitHub Releases now ship the **NativePHP-built `.exe`** (primary download)
+- Inno Setup package remains available for legacy browser-based install
+
 ## [1.0.1] - 2026-09-02
 
 ### Added
@@ -19,5 +31,6 @@ All notable releases of Smart Weighbridge Management System.
 ### Fixed
 - DS17 low-weight parsing and live display cache issues
 
+[1.1.0]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.1.0
 [1.0.1]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.0.1
 [1.0.0]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.0.0
