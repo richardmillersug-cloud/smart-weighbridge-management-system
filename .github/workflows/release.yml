@@ -44,6 +44,10 @@ jobs:
             "#define AppVersion `"$version`""
           )
 
+      - name: Build app icon
+        shell: pwsh
+        run: installer/scripts/build-icon.ps1
+
       - name: Install PHP dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction
 

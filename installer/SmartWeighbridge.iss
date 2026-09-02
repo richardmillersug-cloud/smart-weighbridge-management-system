@@ -29,7 +29,8 @@ SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64compatible
-UninstallDisplayIcon={app}\SmartWeighbridge.bat
+SetupIconFile=assets\app-icon.ico
+UninstallDisplayIcon={app}\installer\assets\app-icon.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -42,12 +43,12 @@ Source: "{#ReleaseDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Source: "{#ReleaseDir}\installer\env\.env.station.example"; DestDir: "{app}"; DestName: ".env"; Flags: onlyifdoesntexist
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"
+Name: "{group}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"; IconFilename: "{app}\installer\assets\app-icon.ico"
 Name: "{group}\Stop {#AppName}"; Filename: "{app}\Stop SmartWeighbridge.bat"; WorkingDir: "{app}"
 Name: "{group}\Customer Setup Guide"; Filename: "{app}\CUSTOMER-SETUP.md"; WorkingDir: "{app}"
 Name: "{group}\Upgrade Station"; Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\upgrade-station.ps1"""; WorkingDir: "{app}"
 Name: "{group}\Station Setup"; Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\setup-station.ps1"""; WorkingDir: "{app}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"; IconFilename: "{app}\installer\assets\app-icon.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\setup-station.ps1"""; Description: "Run first-time database setup"; Flags: postinstall skipifsilent unchecked
