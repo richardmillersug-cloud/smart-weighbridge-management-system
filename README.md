@@ -4,6 +4,8 @@ Laravel 12 + Livewire 3 weighbridge app for truck weighing, tickets, billing, pa
 
 **Repository:** [github.com/richardmillersug-cloud/smart-weighbridge-management-system](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system)
 
+> **Customer / station install:** see **[CUSTOMER-SETUP.md](CUSTOMER-SETUP.md)** for step-by-step setup using `SmartWeighbridge-Setup.exe`.
+
 ---
 
 ## Requirements

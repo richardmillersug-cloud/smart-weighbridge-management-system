@@ -39,7 +39,9 @@ Output: **`dist\SmartWeighbridge-Setup.exe`**
 
 ## Station install flow
 
-1. Install PHP 8.4 + MySQL 8 on the station PC.
+See **[CUSTOMER-SETUP.md](../CUSTOMER-SETUP.md)** for the full customer-facing guide.
+
+Summary:
 2. Create database: `CREATE DATABASE smart_weighbridge;`
 3. Run **`SmartWeighbridge-Setup.exe`**.
 4. On first launch, edit **`.env`** (MySQL password, COM port, DigitalOcean cloud settings).

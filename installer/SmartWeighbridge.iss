@@ -41,6 +41,7 @@ Source: "{#ReleaseDir}\installer\env\.env.station.example"; DestDir: "{app}"; De
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"
 Name: "{group}\Stop {#AppName}"; Filename: "{app}\Stop SmartWeighbridge.bat"; WorkingDir: "{app}"
+Name: "{group}\Customer Setup Guide"; Filename: "{app}\CUSTOMER-SETUP.md"; WorkingDir: "{app}"
 Name: "{group}\Station Setup"; Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\installer\scripts\setup-station.ps1"""; WorkingDir: "{app}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"; Tasks: desktopicon
 
