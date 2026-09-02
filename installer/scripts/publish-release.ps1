@@ -31,6 +31,8 @@ if ($Version -notmatch '^\d+\.\d+\.\d+$') {
 
 Write-Host "Publishing Smart Weighbridge v$Version" -ForegroundColor Cyan
 
+& (Join-Path $PSScriptRoot "build-icon.ps1")
+
 Set-Content -Path $VersionFile -Value $Version -NoNewline
 Set-Content -Path $VersionIss -Value @(
     "; Auto-synced from root VERSION file by publish-release.ps1",

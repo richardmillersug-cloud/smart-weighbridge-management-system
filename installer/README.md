@@ -37,6 +37,16 @@ Then compile with Inno Setup (GUI) or command line:
 
 Output: **`dist\SmartWeighbridge-Setup.exe`**
 
+### App icon (desktop shortcut)
+
+Source PNG: **`installer/assets/app-icon.png`**. Regenerate the Windows `.ico`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File installer\scripts\build-icon.ps1
+```
+
+The installer uses **`installer/assets/app-icon.ico`** for the Setup EXE and desktop shortcut.
+
 ## Publish a GitHub Release (easy customer updates)
 
 Version is stored in **`VERSION`** (e.g. `1.0.0`). Bump it, update **`CHANGELOG.md`**, then:
