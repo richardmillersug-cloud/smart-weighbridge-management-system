@@ -1,5 +1,5 @@
 ; Smart Weighbridge Management System — Windows installer
-; Requires Inno Setup 6: https://jrsoftware.org/isinfo.php
+; Requires Inno Setup 6 or 7: https://jrsoftware.org/isinfo.php
 ; Run build-release.ps1 first, then compile this script.
 
 #define AppName "Smart Weighbridge"
@@ -36,6 +36,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 
 [Files]
 Source: "{#ReleaseDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#ReleaseDir}\installer\env\.env.station.example"; DestDir: "{app}"; DestName: ".env"; Flags: onlyifdoesntexist
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\SmartWeighbridge.bat"; WorkingDir: "{app}"
@@ -49,24 +50,4 @@ Filename: "notepad.exe"; Parameters: "{app}\.env"; Description: "Edit .env confi
 Filename: "{app}\SmartWeighbridge.bat"; Description: "Launch {#AppName}"; Flags: postinstall skipifsilent nowait unchecked
 
 [UninstallRun]
-Filename: "{app}\Stop SmartWeighbridge.bat"; Flags: runhidden
-
-[Code]
-procedure CurStepChanged(CurStep: TSetupStep);
-var
-  EnvPath, TemplatePath, EnvContent: String;
-begin
-  if CurStep = ssPostInstall then
-  begin
-    EnvPath := ExpandConstant('{app}\.env');
-    TemplatePath := ExpandConstant('{app}\installer\env\.env.station.example');
-    if not FileExists(EnvPath) and FileExists(TemplatePath) then
-    begin
-      if LoadStringFromFile(TemplatePath, EnvContent) then
-      begin
-        StringChangeEx(EnvContent, 'DB_CLOUD_SSL_CA=', 'DB_CLOUD_SSL_CA=' + ExpandConstant('{app}\storage\certs\ca-certificate.crt'), True);
-        SaveStringToFile(EnvPath, EnvContent, False);
-      end;
-    end;
-  end;
-end;
+Filename: "{app}\Stop SmartWeighbridge.bat"; RunOnceId: "StopSmartWeighbridge"; Flags: runhidden

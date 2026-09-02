@@ -9,7 +9,7 @@ Package the Smart Weighbridge app as **`SmartWeighbridge-Setup.exe`** for statio
 | PHP 8.4+ | Same extensions as main README |
 | Composer 2.x | |
 | Node.js 20+ | For `npm run build` |
-| Inno Setup 6 | [Download](https://jrsoftware.org/isinfo.php) |
+| Inno Setup 6 or 7 | [Download](https://jrsoftware.org/isinfo.php) |
 
 ## Prerequisites (station PC)
 
@@ -29,7 +29,11 @@ From the project root:
 powershell -ExecutionPolicy Bypass -File installer\scripts\build-release.ps1
 ```
 
-Then open **`installer\SmartWeighbridge.iss`** in Inno Setup and click **Compile**.
+Then compile with Inno Setup (GUI) or command line:
+
+```powershell
+& "C:\Program Files\Inno Setup 7\ISCC.exe" "installer\SmartWeighbridge.iss"
+```
 
 Output: **`dist\SmartWeighbridge-Setup.exe`**
 
