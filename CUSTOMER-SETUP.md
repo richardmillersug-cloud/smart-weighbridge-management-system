@@ -233,6 +233,23 @@ Cloud sync works best when the PC has internet and the app is running (the launc
 
 ---
 
+## Updating to a new version
+
+When your supplier sends a newer **`SmartWeighbridge-Setup.exe`**:
+
+1. **Stop** the app — Start Menu → **Stop Smart Weighbridge**.
+2. **Download** the latest release from your supplier (GitHub Releases link if provided).
+3. **Run** the new `SmartWeighbridge-Setup.exe` — install to the **same folder** (usually `C:\Program Files\SmartWeighbridge`).
+4. **Upgrade** — Start Menu → **Smart Weighbridge → Upgrade Station** (runs database migrations).
+5. **Start** the app again — desktop shortcut **Smart Weighbridge**.
+
+Your **`.env`**, local database, and tickets/invoices are **kept**. You do not need to run **Station Setup** again unless your supplier says so.
+
+**Download updates (if using GitHub Releases):**  
+[https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases)
+
+---
+
 ## Support checklist
 
 If something is wrong, note:
@@ -257,6 +274,7 @@ Contact your supplier with this information.
 | Scale COM port | `.env` → `WEIGHBRIDGE_COM_PORT` and **Stations** in app |
 | Cloud status | **Administration → Cloud Sync** |
 | Change passwords | **Administration → Users & Roles** |
+| **Update app** | New Setup.exe → **Upgrade Station** → restart |
 
 ---
 
