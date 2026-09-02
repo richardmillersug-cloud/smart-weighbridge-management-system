@@ -35,34 +35,7 @@ if (Test-Path "package-lock.json") {
 npm run build
 
 Write-Host "[3/4] Preparing release folder..."
-if (Test-Path $ReleaseDir) {
-    Remove-Item $ReleaseDir -Recurse -Force
-}
-New-Item -ItemType Directory -Path $ReleaseDir -Force | Out-Null
-
-$excludeDirs = @(
-    ".git", "node_modules", "dist", "tests", ".phpunit.cache",
-    "storage\logs", "storage\framework\cache", "storage\framework\sessions",
-    "storage\framework\views", "database\*.sqlite"
-)
-
-robocopy $AppRoot $ReleaseDir /MIR /XD .git node_modules dist tests .phpunit.cache `
-    storage\logs storage\framework\cache storage\framework\sessions storage\framework\views `
-    /XF .env .env.backup composer.phar php-local.ini `
-    /NFL /NDL /NJH /NJS /nc /ns /np | Out-Null
-if ($LASTEXITCODE -gt 7) {
-    throw "robocopy failed with exit code $LASTEXITCODE"
-}
-
-# Ensure writable storage dirs exist in release
-@(
-    "storage\logs", "storage\framework\cache", "storage\framework\sessions",
-    "storage\framework\views", "storage\app\public", "storage\certs",
-    "bootstrap\cache"
-) | ForEach-Object {
-    $path = Join-Path $ReleaseDir $_
-    if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null }
-}
+& (Join-Path $PSScriptRoot "prepare-release-folder.ps1") -AppRoot $AppRoot
 
 Write-Host "[4/4] Release folder ready: $ReleaseDir" -ForegroundColor Green
 Write-Host ""
