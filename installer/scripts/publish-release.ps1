@@ -67,8 +67,7 @@ $ReleaseUrl = "https://github.com/richardmillersug-cloud/smart-weighbridge-manag
     "## Update existing install",
     "1. Stop the app (**Stop Smart Weighbridge** from Start Menu).",
     "2. Run the new **SmartWeighbridge-Setup.exe** (install over the existing folder).",
-    "3. Run **Upgrade Station** from Start Menu, or:",
-    "   ``powershell -ExecutionPolicy Bypass -File `"`$env:ProgramFiles\SmartWeighbridge\installer\scripts\upgrade-station.ps1`"``",
+    "3. Run **Upgrade Station** from Start Menu.",
     "4. Start **Smart Weighbridge** again.",
     "",
     "Your ``.env`` and local database are kept.",
@@ -81,7 +80,7 @@ Write-Host "Built: $SetupExe" -ForegroundColor Green
 Write-Host "Size:  $([math]::Round((Get-Item $SetupExe).Length / 1MB, 2)) MB"
 
 if ($SkipPublish) {
-    Write-Host "SkipPublish set — upload manually to GitHub Releases as $Tag"
+    Write-Host "SkipPublish set - upload manually to GitHub Releases as $Tag"
     exit 0
 }
 
