@@ -8,8 +8,8 @@ This guide is for **station owners and operators** installing the Smart Weighbri
 
 | Version | Download | PHP required? | App opens in |
 |---------|----------|---------------|--------------|
-| **v1.1.0+ (recommended)** | `SmartWeighbridge-Native.exe` | **No** — bundled | Native desktop window |
-| **v1.0.x (legacy)** | `SmartWeighbridge-Setup.exe` | **Yes** — install PHP 8.4 | Browser at 127.0.0.1 |
+| **v1.1.2+ (recommended)** | `SmartWeighbridge-Native.exe` | **No** — bundled | Native desktop window |
+| **v1.0.x (legacy fallback)** | `SmartWeighbridge-Setup.exe` | **Yes** — install PHP 8.4 | Browser at 127.0.0.1 |
 
 **Download:** [GitHub Releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases)
 
@@ -17,9 +17,11 @@ This guide is for **station owners and operators** installing the Smart Weighbri
 
 ---
 
-## Native app setup (v1.1.0+) — `SmartWeighbridge-Native.exe`
+## Native app setup (v1.1.2+) — `SmartWeighbridge-Native.exe`
 
-You need **MySQL 8 only**. PHP is already inside the installer (~200 MB download).
+You need **MySQL 8 only**. PHP is bundled inside the installer (~200 MB download).
+
+**Install location (same idea as legacy Setup):** `C:\Program Files\SmartWeighbridge`
 
 ### Step N1 — Install MySQL 8
 
@@ -39,7 +41,7 @@ CREATE DATABASE smart_weighbridge CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_
 2. **Do not** run it from OneDrive, a network drive, or a USB stick
 3. Right‑click → **Run as administrator**
 4. If Windows SmartScreen appears: **More info** → **Run anyway** (app is not code‑signed yet)
-5. Complete the install wizard — use the default folder (local disk)
+5. Complete the install wizard — default folder **`C:\Program Files\SmartWeighbridge`**
 6. Tick **Create a desktop shortcut**
 7. **Do not** launch from the downloaded `.exe` again after install
 
@@ -326,7 +328,7 @@ Your **`.env`**, local database, and tickets/invoices are **kept**. You do not n
 
 ### For customers — install or update
 
-**v1.1.1+:** [SmartWeighbridge-Native.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.1.1/SmartWeighbridge-Native.exe) — native desktop app (~200 MB, PHP bundled).
+**v1.1.2+:** [SmartWeighbridge-Native.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.1.2/SmartWeighbridge-Native.exe) — native desktop app (~200 MB, PHP bundled, installs to `Program Files\SmartWeighbridge`).
 
 **v1.0.x:** [SmartWeighbridge-Setup.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.0.1/SmartWeighbridge-Setup.exe) — legacy browser mode (requires PHP + MySQL).
 
