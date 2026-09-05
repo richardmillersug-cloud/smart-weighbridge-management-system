@@ -22,9 +22,10 @@ if (-not (Test-Path (Join-Path $electron "package.json"))) {
     throw "nativephp/electron was not published."
 }
 
+# Only patch the Electron main process. Replacing electron-builder.mjs / php.js
+# aborted packaging in CI (no setup.exe). Stock NativePHP packaging is what
+# published v1.1.1. Runtime still prefers PHP on PATH (first-run wizard).
 $patchDir = Join-Path $PSScriptRoot "..\native-electron"
-Copy-Item (Join-Path $patchDir "electron-builder.mjs") (Join-Path $electron "electron-builder.mjs") -Force
-Copy-Item (Join-Path $patchDir "php.js") (Join-Path $electron "php.js") -Force
 Copy-Item (Join-Path $patchDir "index.js") (Join-Path $electron "src\main\index.js") -Force
 
 Write-Host "Preparing extras/ for native installer..." -ForegroundColor Cyan

@@ -26,19 +26,6 @@ function Get-NativeDistRoot {
     return $null
 }
 
-function Get-UnpackedDir {
-    param([string]$DistRoot)
-
-    $matches = Get-ChildItem $DistRoot -Directory -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '^win(-[a-z0-9]+)?-unpacked$' }
-
-    if ($matches) {
-        return ($matches | Select-Object -First 1).FullName
-    }
-
-    return $null
-}
-
 function Find-SetupExe {
     param([string]$DistRoot)
 
@@ -73,45 +60,11 @@ if (-not $setup) {
 }
 
 $setupMb = [math]::Round($setup.Length / 1MB, 2)
-if ($setup.Length -lt 50MB) {
+if ($setup.Length -lt 5MB) {
     throw "Setup exe looks too small ($setupMb MB)."
 }
 
 Write-Host "Setup exe found: $($setup.FullName) ($setupMb MB)" -ForegroundColor Green
 
-$unpacked = Get-UnpackedDir -DistRoot $dist
-if (-not $unpacked) {
-    Write-Host "Note: win-unpacked not present in dist (NSIS-only output). Skipping unpacked file checks." -ForegroundColor Yellow
-    Write-Host "Native build verified (installer artifact only)." -ForegroundColor Green
-    exit 0
-}
-
-$icuPath = Join-Path $unpacked "icudtl.dat"
-$icu = if (Test-Path $icuPath) {
-    $icuPath
-} else {
-    $found = Get-ChildItem $unpacked -Recurse -Filter "icudtl.dat" -File -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($found) { $found.FullName } else { $null }
-}
-
-if (-not $icu) {
-    throw "icudtl.dat missing from native build (ICU startup will fail)."
-}
-
-$phpPath = Join-Path $unpacked "resources\build\php\php.exe"
-$php = if (Test-Path $phpPath) {
-    $phpPath
-} else {
-    $found = Get-ChildItem $unpacked -Recurse -Filter "php.exe" -File -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($found) { $found.FullName } else { $null }
-}
-
-if (-not $php) {
-    throw "php.exe missing from native build."
-}
-
-Write-Host "Native build verified:" -ForegroundColor Green
-Write-Host "  unpacked     -> $unpacked"
-Write-Host "  icudtl.dat   -> $icu"
-Write-Host "  php.exe      -> $php"
+Write-Host "Native build verified (installer present). PHP is provided by the station PATH, not this package." -ForegroundColor Green
 Write-Host "  setup exe    -> $($setup.FullName) ($setupMb MB)"

@@ -1,3 +1,5 @@
+// Not applied in CI. Replacing stock NativePHP electron-builder aborted packaging
+// (no setup.exe). Runtime PATH PHP is patched via index.js only.
 import { execFile } from 'child_process';
 import { existsSync } from 'fs';
 import { join } from 'path';

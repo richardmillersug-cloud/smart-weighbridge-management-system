@@ -2,6 +2,11 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.6] - 2026-09-05
+
+### Fixed
+- Native release packaging — keep stock NativePHP electron-builder so CI publishes `SmartWeighbridge-Native.exe`. Runtime still uses PHP on PATH and the first-run setup wizard.
+
 ## [1.1.5] - 2026-09-05
 
 ### Changed

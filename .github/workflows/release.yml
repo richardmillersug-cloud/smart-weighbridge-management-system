@@ -72,30 +72,7 @@ jobs:
 
       - name: Prepare release artifact
         shell: pwsh
-        run: |
-          $dist = "nativephp/electron/dist"
-          $setup = Get-ChildItem $dist -Filter "*-setup.exe" -ErrorAction SilentlyContinue |
-            Sort-Object Length -Descending |
-            Select-Object -First 1
-          if (-not $setup) {
-            $searchDirs = @(
-              "nativephp/electron/dist",
-              "vendor/nativephp/desktop/resources/electron/dist",
-              "dist"
-            )
-            foreach ($dir in $searchDirs) {
-              if (-not (Test-Path $dir)) { continue }
-              $setup = Get-ChildItem $dir -Recurse -Filter "*.exe" |
-                Where-Object { $_.Name -notmatch "elevate|hiddeninput" } |
-                Sort-Object Length -Descending |
-                Select-Object -First 1
-              if ($setup) { break }
-            }
-          }
-          if (-not $setup) { throw "Native build produced no setup .exe" }
-          New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item $setup.FullName "dist/SmartWeighbridge-Native.exe"
-          Write-Host "Release artifact: dist/SmartWeighbridge-Native.exe ($([math]::Round($setup.Length/1MB,2)) MB) from $($setup.FullName)"
+        run: installer/scripts/collect-native-artifact.ps1
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
