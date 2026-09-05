@@ -2,6 +2,14 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.1] - 2026-09-05
+
+### Changed
+- **Customer setup guide** — native v1.1.0 install steps, ICU error troubleshooting, v1.0.1 fallback
+
+### Fixed
+- Native release CI build (`.env` prep, electron lock sync, artifact path)
+
 ## [1.1.0] - 2026-09-02
 
 ### Added
@@ -31,6 +39,7 @@ All notable releases of Smart Weighbridge Management System.
 ### Fixed
 - DS17 low-weight parsing and live display cache issues
 
+[1.1.1]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.1.1
 [1.1.0]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.1.0
 [1.0.1]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.0.1
 [1.0.0]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.0.0

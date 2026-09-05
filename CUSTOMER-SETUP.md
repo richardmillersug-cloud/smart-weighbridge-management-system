@@ -326,7 +326,7 @@ Your **`.env`**, local database, and tickets/invoices are **kept**. You do not n
 
 ### For customers — install or update
 
-**v1.1.0+:** [SmartWeighbridge-Native.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.1.0/SmartWeighbridge-Native.exe) — native desktop app (~200 MB, PHP bundled).
+**v1.1.1+:** [SmartWeighbridge-Native.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.1.1/SmartWeighbridge-Native.exe) — native desktop app (~200 MB, PHP bundled).
 
 **v1.0.x:** [SmartWeighbridge-Setup.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.0.1/SmartWeighbridge-Setup.exe) — legacy browser mode (requires PHP + MySQL).
 
