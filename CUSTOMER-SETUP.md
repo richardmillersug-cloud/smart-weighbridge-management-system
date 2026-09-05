@@ -4,6 +4,87 @@ This guide is for **station owners and operators** installing the Smart Weighbri
 
 ---
 
+## Choose your installer
+
+| Version | Download | PHP required? | App opens in |
+|---------|----------|---------------|--------------|
+| **v1.1.0+ (recommended)** | `SmartWeighbridge-Native.exe` | **No** — bundled | Native desktop window |
+| **v1.0.x (legacy)** | `SmartWeighbridge-Setup.exe` | **Yes** — install PHP 8.4 | Browser at 127.0.0.1 |
+
+**Download:** [GitHub Releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases)
+
+> **Important:** The app must run on the **same PC** as the COM port. It cannot read the scale from another computer.
+
+---
+
+## Native app setup (v1.1.0+) — `SmartWeighbridge-Native.exe`
+
+You need **MySQL 8 only**. PHP is already inside the installer (~200 MB download).
+
+### Step N1 — Install MySQL 8
+
+1. Install MySQL 8: [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/)
+2. Set a **root password** and remember it.
+3. Create the database:
+
+```sql
+CREATE DATABASE smart_weighbridge CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### Step N2 — Run the native installer (important)
+
+`SmartWeighbridge-Native.exe` is an **installer**, not the app itself.
+
+1. **Move** the downloaded file out of **Downloads** to a local folder, e.g. `C:\Temp\`
+2. **Do not** run it from OneDrive, a network drive, or a USB stick
+3. Right‑click → **Run as administrator**
+4. If Windows SmartScreen appears: **More info** → **Run anyway** (app is not code‑signed yet)
+5. Complete the install wizard — use the default folder (local disk)
+6. Tick **Create a desktop shortcut**
+7. **Do not** launch from the downloaded `.exe` again after install
+
+### Step N3 — Start the installed app
+
+Open **Start Menu → Smart Weighbridge Management System** (or the desktop shortcut created by the installer).
+
+The app opens in its **own window** — no browser, no `127.0.0.1` address bar.
+
+### Step N4 — Configure `.env` and database
+
+After first install, configure the app data folder (your supplier will provide the exact path, often under `%APPDATA%` or the install folder). Set at least:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=smart_weighbridge
+DB_USERNAME=root
+DB_PASSWORD=YOUR_MYSQL_PASSWORD_HERE
+WEIGHBRIDGE_DRIVER=xk3190
+WEIGHBRIDGE_COM_PORT=COM1
+```
+
+Run first‑time database setup as directed by your supplier (`setup-station.ps1` or equivalent).
+
+### If you see: `Invalid file descriptor to ICU data received`
+
+This is an **Electron/Chromium startup error** — the desktop shell could not load its locale files. The app will **not** open until this is fixed.
+
+| Try this | Why |
+|----------|-----|
+| Install from `C:\Temp\` (local disk), not Downloads/OneDrive | Network/sync paths break Electron |
+| Run installer **as administrator** | Permission issues block bundled files |
+| Complete the full install wizard | Double‑clicking the download is not enough |
+| Launch from **Start Menu shortcut** after install | Correct working directory |
+| Add install folder to **Windows Defender exclusions** | Antivirus can quarantine `icudtl.dat` |
+| Re‑download `SmartWeighbridge-Native.exe` and reinstall | Corrupted download |
+
+**Still broken?** Use the **legacy v1.0.1** installer (`SmartWeighbridge-Setup.exe`) from GitHub Releases — it uses PHP + browser mode and is verified on station PCs. Follow **Legacy setup** below.
+
+---
+
+## Legacy setup (v1.0.x) — `SmartWeighbridge-Setup.exe`
+
 ## Before you start
 
 You will need:
@@ -11,13 +92,11 @@ You will need:
 | Item | Details |
 |------|---------|
 | **Windows PC** | Same PC where the XK3190-DS17 indicator is connected |
-| **SmartWeighbridge-Setup.exe** | Provided by your supplier |
+| **SmartWeighbridge-Setup.exe** | From [GitHub Releases v1.0.1](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.0.1) |
 | **PHP 8.4** | Free download — see Step 1 |
 | **MySQL 8** | Local database on this PC — see Step 1 |
 | **Internet** | Required for cloud backup/sync to DigitalOcean |
 | **Scale cable** | RS232 or USB‑serial from indicator to PC |
-
-> **Important:** The app must run on the **same PC** as the COM port. It cannot read the scale from another computer.
 
 ---
 
@@ -247,11 +326,11 @@ Your **`.env`**, local database, and tickets/invoices are **kept**. You do not n
 
 ### For customers — install or update
 
-**Download:** [GitHub Releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases) → **`SmartWeighbridge-Native.exe`** (v1.1.0+)
+**v1.1.0+:** [SmartWeighbridge-Native.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.1.0/SmartWeighbridge-Native.exe) — native desktop app (~200 MB, PHP bundled).
 
-This is a **native Windows app** — no browser, no `127.0.0.1` address bar.
+**v1.0.x:** [SmartWeighbridge-Setup.exe](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/download/v1.0.1/SmartWeighbridge-Setup.exe) — legacy browser mode (requires PHP + MySQL).
 
-Legacy **`SmartWeighbridge-Setup.exe`** (Inno Setup / browser mode) may still be on older releases.
+See **Native app setup** or **Legacy setup** at the top of this guide.
 
 ---
 
