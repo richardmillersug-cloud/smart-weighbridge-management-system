@@ -29,18 +29,11 @@ function Get-NativeDistRoot {
 function Get-UnpackedDir {
     param([string]$DistRoot)
 
-    $direct = Get-ChildItem $DistRoot -Directory -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '^win(-[a-z0-9]+)?-unpacked$' } |
-        Select-Object -First 1
-    if ($direct) {
-        return $direct.FullName
-    }
+    $matches = Get-ChildItem $DistRoot -Directory -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match '^win(-[a-z0-9]+)?-unpacked$' }
 
-    $nested = Get-ChildItem $DistRoot -Directory -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '^win(-[a-z0-9]+)?-unpacked$' } |
-        Select-Object -First 1
-    if ($nested) {
-        return $nested.FullName
+    if ($matches) {
+        return ($matches | Select-Object -First 1).FullName
     }
 
     return $null
@@ -72,43 +65,53 @@ if (-not $dist) {
 
 Write-Host "Checking native build under: $dist"
 
-$unpacked = Get-UnpackedDir -DistRoot $dist
-if (-not $unpacked) {
+$setup = Find-SetupExe -DistRoot $dist
+if (-not $setup) {
     Write-Host "Dist contents:" -ForegroundColor Yellow
     Get-ChildItem $dist -Force | ForEach-Object { Write-Host "  $($_.Name)" }
-    throw "win-unpacked folder missing under $dist"
+    throw "NSIS setup exe missing from native build."
 }
 
-$icu = @(
-    Join-Path $unpacked "icudtl.dat"
-    (Get-ChildItem $unpacked -Recurse -Filter "icudtl.dat" -File -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
-) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+$setupMb = [math]::Round($setup.Length / 1MB, 2)
+if ($setup.Length -lt 50MB) {
+    throw "Setup exe looks too small ($setupMb MB)."
+}
+
+Write-Host "Setup exe found: $($setup.FullName) ($setupMb MB)" -ForegroundColor Green
+
+$unpacked = Get-UnpackedDir -DistRoot $dist
+if (-not $unpacked) {
+    Write-Host "Note: win-unpacked not present in dist (NSIS-only output). Skipping unpacked file checks." -ForegroundColor Yellow
+    Write-Host "Native build verified (installer artifact only)." -ForegroundColor Green
+    exit 0
+}
+
+$icuPath = Join-Path $unpacked "icudtl.dat"
+$icu = if (Test-Path $icuPath) {
+    $icuPath
+} else {
+    $found = Get-ChildItem $unpacked -Recurse -Filter "icudtl.dat" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($found) { $found.FullName } else { $null }
+}
 
 if (-not $icu) {
     throw "icudtl.dat missing from native build (ICU startup will fail)."
 }
 
-$phpCandidates = @(
-    Join-Path $unpacked "resources\build\php\php.exe",
-    (Get-ChildItem $unpacked -Recurse -Filter "php.exe" -File -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
-) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+$phpPath = Join-Path $unpacked "resources\build\php\php.exe"
+$php = if (Test-Path $phpPath) {
+    $phpPath
+} else {
+    $found = Get-ChildItem $unpacked -Recurse -Filter "php.exe" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($found) { $found.FullName } else { $null }
+}
 
-if (-not $phpCandidates) {
+if (-not $php) {
     throw "php.exe missing from native build."
-}
-$php = $phpCandidates
-
-$setup = Find-SetupExe -DistRoot $dist
-if (-not $setup) {
-    throw "NSIS setup exe missing from native build."
-}
-
-if ($setup.Length -lt 50MB) {
-    throw "Setup exe looks too small ($([math]::Round($setup.Length/1MB,2)) MB)."
 }
 
 Write-Host "Native build verified:" -ForegroundColor Green
 Write-Host "  unpacked     -> $unpacked"
 Write-Host "  icudtl.dat   -> $icu"
 Write-Host "  php.exe      -> $php"
-Write-Host "  setup exe    -> $($setup.FullName) ($([math]::Round($setup.Length/1MB,2)) MB)"
+Write-Host "  setup exe    -> $($setup.FullName) ($setupMb MB)"

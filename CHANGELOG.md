@@ -2,6 +2,11 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.4] - 2026-09-05
+
+### Fixed
+- Release CI verify script PowerShell null handling and allow NSIS-only dist output
+
 ## [1.1.3] - 2026-09-05
 
 ### Fixed
