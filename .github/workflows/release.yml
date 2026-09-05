@@ -56,19 +56,33 @@ jobs:
           npm install
           npm run build
 
+      - name: Prepare native build environment
+        run: php installer/scripts/prepare-native-ci.php
+
       - name: Build native Windows app
         run: php artisan native:build win --no-interaction
 
       - name: Prepare release artifact
         shell: pwsh
         run: |
-          $exe = Get-ChildItem dist -Recurse -Filter "*.exe" |
-            Where-Object { $_.Name -notmatch "elevate" } |
-            Sort-Object Length -Descending |
-            Select-Object -First 1
-          if (-not $exe) { throw "Native build produced no .exe in dist/" }
+          $searchDirs = @(
+            "nativephp/electron/dist",
+            "vendor/nativephp/desktop/resources/electron/dist",
+            "dist"
+          )
+          $exe = $null
+          foreach ($dir in $searchDirs) {
+            if (-not (Test-Path $dir)) { continue }
+            $found = Get-ChildItem $dir -Recurse -Filter "*.exe" |
+              Where-Object { $_.Name -notmatch "elevate|hiddeninput" } |
+              Sort-Object Length -Descending |
+              Select-Object -First 1
+            if ($found) { $exe = $found; break }
+          }
+          if (-not $exe) { throw "Native build produced no .exe (searched: $($searchDirs -join ', '))" }
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item $exe.FullName "dist/SmartWeighbridge-Native.exe"
-          Write-Host "Release artifact: dist/SmartWeighbridge-Native.exe ($([math]::Round($exe.Length/1MB,2)) MB)"
+          Write-Host "Release artifact: dist/SmartWeighbridge-Native.exe ($([math]::Round($exe.Length/1MB,2)) MB) from $($exe.FullName)"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
