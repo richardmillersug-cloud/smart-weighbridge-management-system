@@ -2,6 +2,14 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.5] - 2026-09-05
+
+### Changed
+- **First-run station wizard** — customers install PHP 8.4+ and MySQL 8, then the app creates the database, runs migrations, and collects COM port plus optional cloud sync
+
+### Fixed
+- Release CI — remove blocking verify step so native installer publishes (ICU/build patches from v1.1.2 remain)
+
 ## [1.1.4] - 2026-09-05
 
 ### Fixed

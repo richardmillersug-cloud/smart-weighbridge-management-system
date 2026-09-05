@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Setup\StationSetupController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
@@ -22,6 +23,9 @@ use App\Livewire\WeighingStation;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
+
+Route::get('setup', [StationSetupController::class, 'show'])->name('setup.show');
+Route::post('setup', [StationSetupController::class, 'store'])->name('setup.store');
 
 /*
 |--------------------------------------------------------------------------

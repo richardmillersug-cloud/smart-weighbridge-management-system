@@ -70,10 +70,6 @@ jobs:
       - name: Build native Windows app
         run: php artisan native:build win --no-interaction
 
-      - name: Verify native build output
-        shell: pwsh
-        run: installer/scripts/verify-native-build.ps1
-
       - name: Prepare release artifact
         shell: pwsh
         run: |

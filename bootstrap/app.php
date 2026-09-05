@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Middleware\EnsureStationSetup;
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Support\StationSetupState;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,8 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureUserIsActive::class,
         ]);
 
+        $middleware->prependToGroup('web', EnsureStationSetup::class);
         $middleware->appendToGroup('web', EnsureUserIsActive::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (QueryException|\PDOException $e, $request) {
+            if (! StationSetupState::isComplete() && ! $request->routeIs('setup.*')) {
+                return redirect()->route('setup.show');
+            }
+        });
     })->create();

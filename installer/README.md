@@ -79,33 +79,27 @@ Release appears at:
 
 ## Station install flow
 
-See **[CUSTOMER-SETUP.md](../CUSTOMER-SETUP.md)** for the full customer-facing guide.
+See **[CUSTOMER-SETUP.md](../CUSTOMER-SETUP.md)** for the customer-facing guide.
 
 Summary:
 
-1. Install PHP 8.4 + MySQL 8 on the station PC.
-2. Create database: `CREATE DATABASE smart_weighbridge;`
-3. Run **`SmartWeighbridge-Setup.exe`**.
-4. On first launch, edit **`.env`** (MySQL password, COM port, DigitalOcean cloud settings).
-5. Run **Station Setup** from Start Menu (or `setup-station.ps1`).
-6. Place DO CA cert in `storage\certs\ca-certificate.crt`.
-7. Run cloud migrations once: `php artisan migrate --database=mysql_cloud` and `php artisan cloud:sync-full`.
-8. Double-click **Smart Weighbridge** desktop shortcut.
+1. Install PHP 8.4 (on PATH) and MySQL 8 on the station PC.
+2. Run **`SmartWeighbridge-Setup.exe`** or **`SmartWeighbridge-Native.exe`**.
+3. Launch the app. First run opens the setup screen (MySQL password, COM port, optional cloud sync).
+4. The app creates the database, migrates, and seeds accounts. Sign in when it finishes.
 
 ## Launcher scripts
 
 | File | Purpose |
 |------|---------|
-| `SmartWeighbridge.bat` | Starts queue worker + web server + opens browser |
-| `Stop SmartWeighbridge.bat` | Stops background PHP processes |
-| `upgrade-station.ps1` | Migrations after installing an update |
+| `SmartWeighbridge.bat` | Checks PHP, applies migrations if already set up, starts the app |
+| `Stop SmartWeighbridge.bat` | Stops the desktop app and background PHP processes |
+| `upgrade-station.ps1` | Optional manual migrate after an update (also runs on launch) |
 
 ## Without Inno Setup
-
-You can copy the release folder directly:
 
 ```powershell
 installer\scripts\build-release.ps1
 # Copy dist\SmartWeighbridgeRelease to the station PC
-# Create .env, run setup-station.ps1, use SmartWeighbridge.bat
+# Run SmartWeighbridge.bat — complete setup in the app window
 ```

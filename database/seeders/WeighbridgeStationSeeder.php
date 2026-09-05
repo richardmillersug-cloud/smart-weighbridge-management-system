@@ -14,7 +14,7 @@ class WeighbridgeStationSeeder extends Seeder
             [
                 'indicator_model' => 'XK3190-DS17',
                 'communication_type' => 'RS232',
-                'com_port' => 'COM1',
+                'com_port' => env('WEIGHBRIDGE_COM_PORT', 'COM1'),
                 'baud_rate' => 9600,
                 'data_bits' => 8,
                 'parity' => 'none',

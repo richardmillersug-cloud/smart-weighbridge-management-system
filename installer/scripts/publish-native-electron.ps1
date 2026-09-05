@@ -42,10 +42,9 @@ Copy-Item (Join-Path $AppRoot "installer\scripts\upgrade-station.ps1") (Join-Pat
 @'
 Smart Weighbridge — station support files (installed next to the native app).
 
-1. Install MySQL 8 and create database smart_weighbridge
-2. Copy .env.station.example to the app .env (see CUSTOMER-SETUP.md)
-3. Run setup-station.ps1 from an elevated PowerShell in the install folder
-4. Launch Smart Weighbridge from the desktop shortcut
+1. Install PHP 8.4+ (on PATH) and MySQL 8
+2. Launch Smart Weighbridge from the Start Menu or desktop shortcut
+3. Complete the first-run setup screen (MySQL password, COM port, optional cloud sync)
 '@ | Set-Content (Join-Path $extras "README.txt") -Encoding UTF8
 
 Write-Host "NativePHP electron project published and patched." -ForegroundColor Green

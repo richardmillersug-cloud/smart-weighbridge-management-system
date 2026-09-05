@@ -6,21 +6,31 @@ use App\Models\WeighbridgeStation;
 use App\Services\Weighbridge\DummyWeightReaderService;
 use App\Services\Weighbridge\SerialWeightReaderService;
 use App\Services\Weighbridge\WeightReaderInterface;
+use App\Support\StationSetupState;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->app->singleton(WeightReaderInterface::class, function ($app): WeightReaderInterface {
-            return match (config('weighbridge.driver')) {
-                'serial', 'xk3190' => SerialWeightReaderService::fromStation(
-                    WeighbridgeStation::defaultStation()
-                ),
-                default => new DummyWeightReaderService(),
-            };
+            if (! StationSetupState::isComplete()) {
+                return new DummyWeightReaderService();
+            }
+
+            try {
+                return match (config('weighbridge.driver')) {
+                    'serial', 'xk3190' => SerialWeightReaderService::fromStation(
+                        WeighbridgeStation::defaultStation()
+                    ),
+                    default => new DummyWeightReaderService(),
+                };
+            } catch (Throwable) {
+                return new DummyWeightReaderService();
+            }
         });
     }
 

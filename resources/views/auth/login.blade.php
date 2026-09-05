@@ -9,6 +9,12 @@
             </div>
         @endif
 
+        @if (session('warning'))
+            <div class="mb-4 rounded-lg border border-amber-700/50 bg-amber-950/50 px-4 py-3 text-sm text-amber-200">
+                {{ session('warning') }}
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login.store') }}" class="space-y-5">
             @csrf
 

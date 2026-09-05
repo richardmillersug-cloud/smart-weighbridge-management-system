@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\StationSetupState;
 use Native\Desktop\Contracts\ProvidesPhpIni;
 use Native\Desktop\Facades\Window;
 
@@ -14,7 +15,7 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     {
         Window::open()
             ->title('Smart Weighbridge')
-            ->route('dashboard')
+            ->route(StationSetupState::isComplete() ? 'dashboard' : 'setup.show')
             ->width(1440)
             ->height(900)
             ->minWidth(1024)
@@ -25,7 +26,7 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     }
 
     /**
-     * PHP settings for the bundled NativePHP runtime (MySQL, COM port, cloud sync).
+     * PHP settings for the NativePHP runtime (MySQL, COM port, cloud sync).
      */
     public function phpIni(): array
     {
