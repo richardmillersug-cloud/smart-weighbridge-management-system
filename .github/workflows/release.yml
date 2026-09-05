@@ -49,6 +49,10 @@ jobs:
       - name: Install NativePHP runtime
         run: php artisan native:install --no-interaction
 
+      - name: Publish and patch NativePHP electron project
+        shell: pwsh
+        run: installer/scripts/publish-native-electron.ps1
+
       - name: Build frontend and app icon
         shell: pwsh
         run: |
@@ -62,27 +66,36 @@ jobs:
       - name: Build native Windows app
         run: php artisan native:build win --no-interaction
 
+      - name: Verify native build output
+        shell: pwsh
+        run: installer/scripts/verify-native-build.ps1
+
       - name: Prepare release artifact
         shell: pwsh
         run: |
-          $searchDirs = @(
-            "nativephp/electron/dist",
-            "vendor/nativephp/desktop/resources/electron/dist",
-            "dist"
-          )
-          $exe = $null
-          foreach ($dir in $searchDirs) {
-            if (-not (Test-Path $dir)) { continue }
-            $found = Get-ChildItem $dir -Recurse -Filter "*.exe" |
-              Where-Object { $_.Name -notmatch "elevate|hiddeninput" } |
-              Sort-Object Length -Descending |
-              Select-Object -First 1
-            if ($found) { $exe = $found; break }
+          $dist = "nativephp/electron/dist"
+          $setup = Get-ChildItem $dist -Filter "*-setup.exe" -ErrorAction SilentlyContinue |
+            Sort-Object Length -Descending |
+            Select-Object -First 1
+          if (-not $setup) {
+            $searchDirs = @(
+              "nativephp/electron/dist",
+              "vendor/nativephp/desktop/resources/electron/dist",
+              "dist"
+            )
+            foreach ($dir in $searchDirs) {
+              if (-not (Test-Path $dir)) { continue }
+              $setup = Get-ChildItem $dir -Recurse -Filter "*.exe" |
+                Where-Object { $_.Name -notmatch "elevate|hiddeninput" } |
+                Sort-Object Length -Descending |
+                Select-Object -First 1
+              if ($setup) { break }
+            }
           }
-          if (-not $exe) { throw "Native build produced no .exe (searched: $($searchDirs -join ', '))" }
+          if (-not $setup) { throw "Native build produced no setup .exe" }
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item $exe.FullName "dist/SmartWeighbridge-Native.exe"
-          Write-Host "Release artifact: dist/SmartWeighbridge-Native.exe ($([math]::Round($exe.Length/1MB,2)) MB) from $($exe.FullName)"
+          Copy-Item $setup.FullName "dist/SmartWeighbridge-Native.exe"
+          Write-Host "Release artifact: dist/SmartWeighbridge-Native.exe ($([math]::Round($setup.Length/1MB,2)) MB) from $($setup.FullName)"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

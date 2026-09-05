@@ -1,0 +1,21 @@
+import NativePHP from '#plugin';
+import { app } from 'electron';
+import path from 'path';
+
+import fixPath from 'fix-path';
+fixPath();
+
+// Chromium ICU data (icudtl.dat) must resolve from the install directory on Windows.
+if (process.platform === 'win32' && app.isPackaged) {
+    process.chdir(path.dirname(process.execPath));
+}
+
+const buildPath = path.resolve(import.meta.dirname, import.meta.env.MAIN_VITE_NATIVEPHP_BUILD_PATH);
+const defaultIcon = path.join(buildPath, 'icon.png');
+const certificate = path.join(buildPath, 'cacert.pem');
+
+const executable = process.platform === 'win32' ? 'php.exe' : 'php';
+const phpBinary = path.join(buildPath, 'php', executable);
+const appPath = path.join(buildPath, 'app');
+
+NativePHP.bootstrap(app, defaultIcon, phpBinary, certificate, appPath);

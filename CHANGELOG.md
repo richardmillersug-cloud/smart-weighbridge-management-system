@@ -2,6 +2,12 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.2] - 2026-09-05
+
+### Fixed
+- **Native Windows installer ICU crash** — await PHP binary extract before packaging, set Electron working directory on Windows, unpack `icudtl.dat`, install to `Program Files\SmartWeighbridge`
+- Native build CI now verifies `icudtl.dat` and `php.exe` exist before release
+
 ## [1.1.1] - 2026-09-05
 
 ### Changed
@@ -39,6 +45,7 @@ All notable releases of Smart Weighbridge Management System.
 ### Fixed
 - DS17 low-weight parsing and live display cache issues
 
+[1.1.2]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.1.2
 [1.1.1]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.1.1
 [1.1.0]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.1.0
 [1.0.1]: https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases/tag/v1.0.1

@@ -29,3 +29,5 @@ php-local.ini
 /.vscode
 /composer.phar
 /dist
+/nativephp/electron
+/extras
