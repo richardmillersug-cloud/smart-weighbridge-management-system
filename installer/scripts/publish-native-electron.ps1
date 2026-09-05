@@ -1,6 +1,7 @@
 # Publish NativePHP electron project and apply Smart Weighbridge build patches.
 param(
-    [string]$AppRoot = ""
+    [string]$AppRoot = "",
+    [switch]$SkipPublish
 )
 
 $ErrorActionPreference = "Stop"
@@ -9,8 +10,12 @@ if (-not $AppRoot) {
 }
 Set-Location $AppRoot
 
-Write-Host "Publishing NativePHP electron project..." -ForegroundColor Cyan
-php artisan native:install --publish --force --no-interaction
+if (-not $SkipPublish) {
+    Write-Host "Publishing NativePHP electron project..." -ForegroundColor Cyan
+    php artisan native:install --publish --force --no-interaction
+} else {
+    Write-Host "Applying native electron patches (skip publish)..." -ForegroundColor Cyan
+}
 
 $electron = Join-Path $AppRoot "nativephp\electron"
 if (-not (Test-Path (Join-Path $electron "package.json"))) {

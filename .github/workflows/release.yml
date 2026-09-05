@@ -63,6 +63,10 @@ jobs:
       - name: Prepare native build environment
         run: php installer/scripts/prepare-native-ci.php
 
+      - name: Re-apply native electron patches
+        shell: pwsh
+        run: installer/scripts/publish-native-electron.ps1 -SkipPublish
+
       - name: Build native Windows app
         run: php artisan native:build win --no-interaction
 

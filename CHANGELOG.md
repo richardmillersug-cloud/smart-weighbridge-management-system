@@ -2,6 +2,11 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.3] - 2026-09-05
+
+### Fixed
+- Release CI verify step — search all native dist paths, accept `win-x64-unpacked`, and re-apply electron patches after `npm install`
+
 ## [1.1.2] - 2026-09-05
 
 ### Fixed
