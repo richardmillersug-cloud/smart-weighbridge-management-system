@@ -12,7 +12,7 @@ npm run build
 php artisan native:run
 ```
 
-Or double-click **`SmartWeighbridge.bat`**.
+Or double-click **`SmartWeighbridge.bat`**. That launcher starts PHP and opens a desktop app window (Windows Edge `--app`). It does **not** start Electron, so the ICU / `icudtl.dat` crash cannot occur.
 
 ## Production build
 

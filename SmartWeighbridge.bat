@@ -35,6 +35,17 @@ if exist "storage\app\station-setup.complete" (
     php artisan migrate --force >nul 2>&1
 )
 
-echo Starting Smart Weighbridge...
-php artisan native:run --no-interaction
+echo Starting Smart Weighbridge desktop window...
+start "SmartWeighbridge-http" /MIN php artisan serve --host=127.0.0.1 --port=8000
+start "SmartWeighbridge-queue" /MIN php artisan queue:work --tries=3
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ok=$false; 1..40 | ForEach-Object { try { if ((Invoke-WebRequest -Uri http://127.0.0.1:8000/up -UseBasicParsing -TimeoutSec 1).StatusCode -eq 200) { $ok=$true; break } } catch {} ; Start-Sleep -Milliseconds 250 }; if (-not $ok) { exit 1 }"
+if errorlevel 1 (
+    echo [ERROR] The app server did not start on http://127.0.0.1:8000
+    pause
+    exit /b 1
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%APP_ROOT%\installer\scripts\open-desktop-window.ps1"
 exit /b %ERRORLEVEL%

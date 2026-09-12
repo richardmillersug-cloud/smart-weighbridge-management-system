@@ -24,7 +24,7 @@ MySQL: [dev.mysql.com/downloads/installer](https://dev.mysql.com/downloads/insta
 2. Move it to `C:\Temp` (not Downloads / OneDrive). Right‑click → **Run as administrator**.
 3. If SmartScreen appears: **More info → Run anyway**.
 4. Finish the wizard — default folder `C:\Program Files\SmartWeighbridge`. Tick the desktop shortcut.
-5. Launch from the **Start Menu** or desktop shortcut (not the downloaded installer).
+5. Launch from the **Start Menu**, desktop shortcut, or `SmartWeighbridge.bat`. The station window is a desktop app window (no address bar). Do **not** double-click the downloaded installer again.
 
 If PHP is missing, the app stops and tells you to install PHP 8.4+ and add it to PATH.
 

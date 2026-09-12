@@ -29,6 +29,9 @@ $patchDir = Join-Path $PSScriptRoot "..\native-electron"
 Copy-Item (Join-Path $patchDir "electron-builder.mjs") (Join-Path $electron "electron-builder.mjs") -Force
 Copy-Item (Join-Path $patchDir "index.js") (Join-Path $electron "src\main\index.js") -Force
 Copy-Item (Join-Path $patchDir "icu-cwd.js") (Join-Path $electron "src\main\icu-cwd.js") -Force
+$buildDir = Join-Path $electron "build"
+New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
+Copy-Item (Join-Path $patchDir "installer.nsh") (Join-Path $buildDir "installer.nsh") -Force
 
 Write-Host "Preparing extras/ for native installer..." -ForegroundColor Cyan
 $extras = Join-Path $AppRoot "extras"

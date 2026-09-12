@@ -134,6 +134,7 @@ export default {
         uninstallDisplayName: '${productName}',
         createDesktopShortcut: 'always',
         deleteAppDataOnUninstall: deleteAppDataOnUninstall,
+        include: 'build/installer.nsh',
     },
     protocols: {
         name: deepLinkProtocol,

@@ -2,6 +2,11 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.8] - 2026-09-12
+
+### Fixed
+- Desktop launch no longer starts Electron (`icudtl.dat` / ICU crash). `SmartWeighbridge.bat` starts PHP and opens a desktop app window via Windows Edge/Chrome `--app` mode. Native installer shortcuts pass `--icu-data-dir` at process start.
+
 ## [1.1.7] - 2026-09-12
 
 ### Fixed
