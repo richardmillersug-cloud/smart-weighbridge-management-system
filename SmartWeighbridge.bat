@@ -22,6 +22,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
+php "installer\scripts\check-php-extensions.php"
+if errorlevel 1 (
+    pause
+    exit /b 1
+)
+
 if not exist ".env" (
     if exist "installer\env\.env.station.example" (
         copy /Y "installer\env\.env.station.example" ".env" >nul

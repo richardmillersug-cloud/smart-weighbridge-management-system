@@ -19,6 +19,8 @@ yarn-error.log
 php-local.ini
 /database/*.sqlite
 /database/*.sqlite-journal
+/database/*.sqlite-shm
+/database/*.sqlite-wal
 /storage/logs/*.log
 /storage/certs/*.crt
 /storage/certs/*.pem
@@ -29,5 +31,4 @@ php-local.ini
 /.vscode
 /composer.phar
 /dist
-/nativephp/electron
 /extras

@@ -19,8 +19,9 @@ $robocopyArgs = @(
     $AppRoot,
     $ReleaseDir,
     "/MIR",
-    "/XD", ".git", "node_modules", "dist", "tests", ".phpunit.cache",
+    "/XD", ".git", ".github", "node_modules", "dist", "tests", ".phpunit.cache",
     "storage\logs", "storage\framework\cache", "storage\framework\sessions", "storage\framework\views",
+    "/XF", ".env", "composer.phar",
     "/NFL", "/NDL", "/NJH", "/NJS", "/nc", "/ns", "/np"
 )
 

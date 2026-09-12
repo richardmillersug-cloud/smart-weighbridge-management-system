@@ -2,6 +2,19 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.2.0] - 2026-09-12
+
+### Removed
+- **Electron / NativePHP desktop runtime, permanently.** Chromium loaded ICU (`icudtl.dat`) before the window existed, so `Invalid file descriptor to ICU data received` could not be fixed from PHP or JavaScript. The `nativephp/desktop` dependency, `config/nativephp.php`, `NativeAppServiceProvider`, the `installer/native-electron` pack, and the native build scripts are gone.
+
+### Changed
+- Releases now ship **`SmartWeighbridge-Setup.exe`** (Inno Setup, no bundled Chromium) instead of the 200 MB `SmartWeighbridge-Native.exe`.
+- The station window is opened by `installer/scripts/open-desktop-window.ps1` using the Edge/Chrome engine already on Windows — a desktop app window with no address bar.
+
+### Added
+- `installer/scripts/check-php-extensions.php` — the launcher now names the exact missing PHP extensions and the `php.ini` lines to add.
+- `tests/Feature/DesktopLauncherTest.php` and `installer/scripts/verify-release-build.ps1` — the test suite and the release build both fail if an Electron runtime returns.
+
 ## [1.1.8] - 2026-09-12
 
 ### Fixed

@@ -9,9 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  build-windows-native:
+  build-windows-installer:
     runs-on: windows-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -36,7 +36,6 @@ jobs:
           $tag = "${{ github.ref_name }}"
           $version = $tag.TrimStart('v')
           "VERSION=$version" >> $env:GITHUB_ENV
-          "NATIVEPHP_APP_VERSION=$version" >> $env:GITHUB_ENV
           Set-Content -Path VERSION -Value $version -NoNewline
           Set-Content -Path installer/version.iss -Value @(
             "; Generated in CI from git tag",
@@ -44,41 +43,31 @@ jobs:
           )
 
       - name: Install PHP dependencies
-        run: composer install --optimize-autoloader --no-interaction
-
-      - name: Install NativePHP runtime
-        run: php artisan native:install --no-interaction
-
-      - name: Publish and patch NativePHP electron project
-        shell: pwsh
-        run: installer/scripts/publish-native-electron.ps1
+        run: composer install --no-dev --optimize-autoloader --no-interaction
 
       - name: Build frontend and app icon
         shell: pwsh
         run: |
           installer/scripts/build-icon.ps1
-          npm install
+          npm ci
           npm run build
 
-      - name: Prepare native build environment
-        run: php installer/scripts/prepare-native-ci.php
-
-      - name: Re-apply native electron patches
+      - name: Prepare release folder
         shell: pwsh
-        run: installer/scripts/publish-native-electron.ps1 -SkipPublish
+        run: installer/scripts/prepare-release-folder.ps1
 
-      - name: Build native Windows app
-        run: php artisan native:build win --no-interaction
-
-      - name: Prepare release artifact
+      - name: Compile Windows installer
         shell: pwsh
-        run: installer/scripts/collect-native-artifact.ps1
+        run: installer/scripts/compile-inno-setup.ps1
+
+      - name: Verify installer has no Electron runtime
+        shell: pwsh
+        run: installer/scripts/verify-release-build.ps1
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/SmartWeighbridge-Native.exe
+            dist/SmartWeighbridge-Setup.exe
             CUSTOMER-SETUP.md
-            installer/NATIVE-DESKTOP.md
           generate_release_notes: true

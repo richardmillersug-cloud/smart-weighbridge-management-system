@@ -84,7 +84,7 @@ See **[CUSTOMER-SETUP.md](../CUSTOMER-SETUP.md)** for the customer-facing guide.
 Summary:
 
 1. Install PHP 8.4 (on PATH) and MySQL 8 on the station PC.
-2. Run **`SmartWeighbridge-Setup.exe`** or **`SmartWeighbridge-Native.exe`**.
+2. Run **`SmartWeighbridge-Setup.exe`**.
 3. Launch the app. First run opens the setup screen (MySQL password, COM port, optional cloud sync).
 4. The app creates the database, migrates, and seeds accounts. Sign in when it finishes.
 

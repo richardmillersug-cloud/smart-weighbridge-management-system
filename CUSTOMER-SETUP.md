@@ -9,6 +9,7 @@ Install on the **weighbridge PC** (the Windows computer connected to the scale i
 | Software | Why |
 |----------|-----|
 | **PHP 8.4+** | Must be installed and on PATH (`php -v` in Command Prompt) |
+| PHP extensions | `openssl`, `mbstring`, `curl`, `fileinfo`, `pdo_mysql` enabled in `php.ini` |
 | **MySQL 8** | Local database on this PC |
 | **Smart Weighbridge installer** | From [GitHub Releases](https://github.com/richardmillersug-cloud/smart-weighbridge-management-system/releases) |
 
@@ -20,13 +21,13 @@ MySQL: [dev.mysql.com/downloads/installer](https://dev.mysql.com/downloads/insta
 
 ## Install and start
 
-1. Download **`SmartWeighbridge-Native.exe`** (or **`SmartWeighbridge-Setup.exe`**).
+1. Download **`SmartWeighbridge-Setup.exe`**.
 2. Move it to `C:\Temp` (not Downloads / OneDrive). Right‑click → **Run as administrator**.
 3. If SmartScreen appears: **More info → Run anyway**.
 4. Finish the wizard — default folder `C:\Program Files\SmartWeighbridge`. Tick the desktop shortcut.
 5. Launch from the **Start Menu**, desktop shortcut, or `SmartWeighbridge.bat`. The station window is a desktop app window (no address bar). Do **not** double-click the downloaded installer again.
 
-If PHP is missing, the app stops and tells you to install PHP 8.4+ and add it to PATH.
+If PHP is missing, or PHP is installed but an extension is switched off, the app stops and prints exactly what to install or which `php.ini` lines to add.
 
 ---
 
@@ -64,19 +65,18 @@ If cloud sync was enabled but the cloud was unreachable, the local station still
 
 ## Updates
 
-Install the new Setup/Native `.exe` into the **same folder**. Start the app — it applies database migrations automatically. Tickets, invoices, and settings are kept.
+Install the new `SmartWeighbridge-Setup.exe` into the **same folder**. Start the app — it applies database migrations automatically. Tickets, invoices, and settings are kept.
 
 ---
 
-## If the native window will not open
-
-Try the legacy installer (`SmartWeighbridge-Setup.exe`) from GitHub Releases. Same first-run setup screen. Install PHP + MySQL first.
+## If the window will not open
 
 | Symptom | What to try |
 |---------|-------------|
 | PHP is required | Install PHP 8.4+, add to PATH, open a new Command Prompt, run `php -v` |
+| Missing extensions listed | Open the `php.ini` shown on screen, remove the `;` in front of each `extension=` line, save, start again |
 | MySQL not running | Start the MySQL Windows service, then continue setup |
-| `Invalid file descriptor to ICU data` | Use **v1.1.7+**. Install from `C:\Temp` as administrator; launch **Start Smart Weighbridge** or the Start Menu shortcut |
+| `Invalid file descriptor to ICU data` | That was the old Electron build. Use **v1.2.0+** and delete any `SmartWeighbridge-Native.exe` shortcut |
 
 ---
 
