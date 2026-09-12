@@ -1,11 +1,6 @@
-// Not applied in CI. Replacing stock NativePHP electron-builder aborted packaging
-// (no setup.exe). Runtime PATH PHP is patched via index.js only.
-import { execFile } from 'child_process';
+import { exec } from 'child_process';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { promisify } from 'util';
-
-const execFileAsync = promisify(execFile);
 
 const appUrl = process.env.APP_URL;
 const appId = process.env.NATIVEPHP_APP_ID;
@@ -54,16 +49,29 @@ if (isBuilding) {
     console.log('  • updater config', updaterConfig);
 }
 
-const extrasPath = join(process.env.APP_PATH, 'extras');
-const extraFiles = existsSync(extrasPath)
-    ? [
-          {
-              from: extrasPath,
-              to: 'extras',
-              filter: ['**/*'],
-          },
-      ]
-    : [];
+const extraFiles = [
+    {
+        from: 'node_modules/electron/dist/icudtl.dat',
+        to: '.',
+    },
+    {
+        from: 'node_modules/electron/dist/locales',
+        to: 'locales',
+    },
+    {
+        from: join(process.env.APP_PATH || '', 'installer', 'native-electron', 'Start Smart Weighbridge.cmd'),
+        to: '.',
+    },
+];
+
+const extrasPath = join(process.env.APP_PATH || '', 'extras');
+if (existsSync(extrasPath)) {
+    extraFiles.push({
+        from: extrasPath,
+        to: 'extras',
+        filter: ['**/*'],
+    });
+}
 
 export default {
     appId: appId,
@@ -74,7 +82,8 @@ export default {
         output: isBuilding ? join(process.env.APP_PATH, 'nativephp', 'electron', 'dist') : undefined,
     },
     asar: true,
-    asarUnpack: ['**/icudtl.dat', '**/locales/**', '**/*.node'],
+    asarUnpack: ['**/icudtl.dat', '**/locales/**', '**/*.pak', '**/*.node'],
+    electronLanguages: ['en-US'],
     files: [
         '!**/.vscode/*',
         '!src/*',
@@ -94,16 +103,21 @@ export default {
             process.exit(1);
         }
 
-        console.log(`  • building php binary - node php.js --${targetOs} --${arch}`);
-        await execFileAsync(process.execPath, ['php.js', `--${targetOs}`, `--${arch}`], {
-            cwd: process.cwd(),
-            maxBuffer: 1024 * 1024 * 64,
-        });
+        console.log(`  • building php binary - exec php.js --${targetOs} --${arch}`);
+        exec(`node php.js --${targetOs} --${arch}`);
+    },
+    afterPack: async (context) => {
+        const icu = join(context.appOutDir, 'icudtl.dat');
+        if (!existsSync(icu)) {
+            console.error('ICU data missing from pack (desktop window will fail):', icu);
+            process.exit(1);
+        }
+
+        console.log('  • icudtl.dat present at', icu);
     },
     afterSign: 'build/notarize.js',
     win: {
         executableName: fileName,
-        target: [{ target: 'nsis', arch: ['x64'] }],
         ...(azureEndpoint && azureCertificateProfileName && azureCodeSigningAccountName
             ? {
                   azureSignOptions: {
@@ -115,19 +129,11 @@ export default {
             : {}),
     },
     nsis: {
-        artifactName: 'SmartWeighbridge-Native-${version}-setup.${ext}',
+        artifactName: appName + '-${version}-setup.${ext}',
         shortcutName: 'Smart Weighbridge',
         uninstallDisplayName: '${productName}',
-        oneClick: false,
-        perMachine: true,
-        allowToChangeInstallationDirectory: true,
-        allowElevation: true,
         createDesktopShortcut: 'always',
-        installerIcon: 'build/icon.ico',
-        uninstallerIcon: 'build/icon.ico',
-        installerHeaderIcon: 'build/icon.ico',
         deleteAppDataOnUninstall: deleteAppDataOnUninstall,
-        installDir: '${PROGRAMFILES64}\\SmartWeighbridge',
     },
     protocols: {
         name: deepLinkProtocol,

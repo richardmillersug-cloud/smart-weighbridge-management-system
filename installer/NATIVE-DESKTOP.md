@@ -22,6 +22,8 @@ powershell -ExecutionPolicy Bypass -File installer\scripts\build-native.ps1
 
 Output is renamed to **`SmartWeighbridge-Native.exe`** on GitHub Releases.
 
+v1.1.7+ copies `icudtl.dat` next to the desktop exe so the window can start (no ICU / Chromium locale crash). PHP on PATH and the first-run wizard are unchanged.
+
 ## Customer still needs on the PC
 
 | Item | Notes |

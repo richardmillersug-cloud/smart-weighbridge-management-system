@@ -66,5 +66,12 @@ if ($setup.Length -lt 5MB) {
 
 Write-Host "Setup exe found: $($setup.FullName) ($setupMb MB)" -ForegroundColor Green
 
-Write-Host "Native build verified (installer present). PHP is provided by the station PATH, not this package." -ForegroundColor Green
+$icu = Get-ChildItem $dist -Recurse -Filter "icudtl.dat" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($icu) {
+    Write-Host "  icudtl.dat   -> $($icu.FullName)"
+} else {
+    Write-Host "Note: icudtl.dat not visible beside the NSIS exe (checked during electron-builder afterPack)." -ForegroundColor Yellow
+}
+
+Write-Host "Native build verified. PHP is provided by the station PATH." -ForegroundColor Green
 Write-Host "  setup exe    -> $($setup.FullName) ($setupMb MB)"

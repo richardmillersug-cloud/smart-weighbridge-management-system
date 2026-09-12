@@ -76,7 +76,7 @@ Try the legacy installer (`SmartWeighbridge-Setup.exe`) from GitHub Releases. Sa
 |---------|-------------|
 | PHP is required | Install PHP 8.4+, add to PATH, open a new Command Prompt, run `php -v` |
 | MySQL not running | Start the MySQL Windows service, then continue setup |
-| `Invalid file descriptor to ICU data` | Install from `C:\Temp` as administrator; launch from Start Menu |
+| `Invalid file descriptor to ICU data` | Use **v1.1.7+**. Install from `C:\Temp` as administrator; launch **Start Smart Weighbridge** or the Start Menu shortcut |
 
 ---
 

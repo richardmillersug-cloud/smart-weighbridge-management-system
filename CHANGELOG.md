@@ -2,6 +2,11 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.1.7] - 2026-09-12
+
+### Fixed
+- Native desktop window ICU crash (`Invalid file descriptor to ICU data received`) — ship `icudtl.dat` next to the exe and start with the install folder as the working directory. First-run still uses PHP on PATH.
+
 ## [1.1.6] - 2026-09-05
 
 ### Fixed

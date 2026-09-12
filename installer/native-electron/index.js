@@ -1,3 +1,4 @@
+import './icu-cwd.js';
 import NativePHP from '#plugin';
 import { app, dialog } from 'electron';
 import { execSync } from 'child_process';
@@ -6,11 +7,6 @@ import path from 'path';
 
 import fixPath from 'fix-path';
 fixPath();
-
-// Chromium ICU data (icudtl.dat) must resolve from the install directory on Windows.
-if (process.platform === 'win32' && app.isPackaged) {
-    process.chdir(path.dirname(process.execPath));
-}
 
 const buildPath = path.resolve(import.meta.dirname, import.meta.env.MAIN_VITE_NATIVEPHP_BUILD_PATH);
 const defaultIcon = path.join(buildPath, 'icon.png');
