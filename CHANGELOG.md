@@ -2,6 +2,11 @@
 
 All notable releases of Smart Weighbridge Management System.
 
+## [1.2.1] - 2026-09-12
+
+### Fixed
+- Station window did not open on PCs whose Windows user name contains a space (for example `RICHARD MILLERS`). The unquoted `--user-data-dir` made Edge exit silently. The path is now quoted, the launcher checks that the browser stayed open, and it falls back to the next browser instead of failing quietly.
+
 ## [1.2.0] - 2026-09-12
 
 ### Removed
